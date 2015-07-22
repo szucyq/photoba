@@ -810,6 +810,7 @@
 					"$(PROJECT_DIR)/album/thirdworkframe/UI",
 				);
 				INFOPLIST_FILE = album/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -837,6 +838,7 @@
 					"$(PROJECT_DIR)/album/thirdworkframe/UI",
 				);
 				INFOPLIST_FILE = album/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
