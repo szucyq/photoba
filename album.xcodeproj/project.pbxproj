@@ -192,6 +192,7 @@
 		D00A8C481B57462E0017F5F1 /* Html5ViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Html5ViewController.h; path = Clsaaes/Html5ViewController.h; sourceTree = "<group>"; };
 		D00A8C491B57462E0017F5F1 /* Html5ViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Html5ViewController.m; path = Clsaaes/Html5ViewController.m; sourceTree = "<group>"; };
 		D00A8C4A1B57462E0017F5F1 /* Html5ViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = Html5ViewController.xib; path = Clsaaes/Html5ViewController.xib; sourceTree = "<group>"; };
+		D02398821B5F807700172986 /* constants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = constants.h; path = thirdworkframe/constants.h; sourceTree = "<group>"; };
 		D054D1C11B5650DF00C74490 /* album.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = album.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D054D1C51B5650DF00C74490 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D054D1C61B5650DF00C74490 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -214,7 +215,6 @@
 		D054D1FD1B56518700C74490 /* SettingViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SettingViewController.m; path = Clsaaes/SettingViewController.m; sourceTree = "<group>"; };
 		D054D1FE1B56518700C74490 /* SettingViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = SettingViewController.xib; path = Clsaaes/SettingViewController.xib; sourceTree = "<group>"; };
 		D054D2011B5651BC00C74490 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
-		D054D2031B56537000C74490 /* constants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = constants.h; path = "../../../Documents/电影配音/Project/05-28-MovieDub/MovieDub/constants.h"; sourceTree = "<group>"; };
 		D054D2051B56618100C74490 /* CustomAlertView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CustomAlertView.h; path = thirdworkframe/CustomAlertView.h; sourceTree = "<group>"; };
 		D054D2061B56618100C74490 /* CustomAlertView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CustomAlertView.m; path = thirdworkframe/CustomAlertView.m; sourceTree = "<group>"; };
 		D054D2071B56618100C74490 /* UIButton+Badge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIButton+Badge.h"; path = "thirdworkframe/UIButton+Badge.h"; sourceTree = "<group>"; };
@@ -445,8 +445,8 @@
 		D054D1C31B5650DF00C74490 /* album */ = {
 			isa = PBXGroup;
 			children = (
+				D02398821B5F807700172986 /* constants.h */,
 				D054D2041B56614200C74490 /* thirdworkframe */,
-				D054D2031B56537000C74490 /* constants.h */,
 				D054D1C81B5650DF00C74490 /* AppDelegate.h */,
 				D054D1C91B5650DF00C74490 /* AppDelegate.m */,
 				D054D1ED1B56515000C74490 /* PhotoViewController.h */,
