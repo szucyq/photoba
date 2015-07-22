@@ -214,7 +214,6 @@
 		D054D1FD1B56518700C74490 /* SettingViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SettingViewController.m; path = Clsaaes/SettingViewController.m; sourceTree = "<group>"; };
 		D054D1FE1B56518700C74490 /* SettingViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = SettingViewController.xib; path = Clsaaes/SettingViewController.xib; sourceTree = "<group>"; };
 		D054D2011B5651BC00C74490 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
-		D054D2031B56537000C74490 /* constants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = constants.h; path = "../../../Documents/电影配音/Project/05-28-MovieDub/MovieDub/constants.h"; sourceTree = "<group>"; };
 		D054D2051B56618100C74490 /* CustomAlertView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CustomAlertView.h; path = thirdworkframe/CustomAlertView.h; sourceTree = "<group>"; };
 		D054D2061B56618100C74490 /* CustomAlertView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CustomAlertView.m; path = thirdworkframe/CustomAlertView.m; sourceTree = "<group>"; };
 		D054D2071B56618100C74490 /* UIButton+Badge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIButton+Badge.h"; path = "thirdworkframe/UIButton+Badge.h"; sourceTree = "<group>"; };
@@ -446,7 +445,6 @@
 			isa = PBXGroup;
 			children = (
 				D054D2041B56614200C74490 /* thirdworkframe */,
-				D054D2031B56537000C74490 /* constants.h */,
 				D054D1C81B5650DF00C74490 /* AppDelegate.h */,
 				D054D1C91B5650DF00C74490 /* AppDelegate.m */,
 				D054D1ED1B56515000C74490 /* PhotoViewController.h */,
@@ -810,6 +808,7 @@
 					"$(PROJECT_DIR)/album/thirdworkframe/UI",
 				);
 				INFOPLIST_FILE = album/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -837,6 +836,7 @@
 					"$(PROJECT_DIR)/album/thirdworkframe/UI",
 				);
 				INFOPLIST_FILE = album/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
