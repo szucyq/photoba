@@ -9,6 +9,5 @@
 #import <UIKit/UIKit.h>
 
 @interface ThemeViewController : UIViewController
--(IBAction)themedetailAction;
 
 @end

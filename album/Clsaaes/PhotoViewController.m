@@ -56,7 +56,7 @@
     [titleText setText:@"随手拍"];
     [self.view addSubview:titleText];
     
-    UIButton *photobutton=[[UIButton alloc]initWithFrame:CGRectMake(kWidth-40, 30, 29, 29)];
+    UIButton *photobutton=[[UIButton alloc]initWithFrame:CGRectMake(kWidth-40, 35, 25, 20)];
     [photobutton setImage:[UIImage imageNamed:@"icon-camera"]  forState:UIControlStateNormal];
     [photobutton addTarget:self action:@selector(photoAction:) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:photobutton];

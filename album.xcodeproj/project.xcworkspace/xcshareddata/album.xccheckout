@@ -11,14 +11,14 @@
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
 		<key>D265E4DC285372ADF4A496E1E907207A6606656C</key>
-		<string>https://github.com/szucyq/photoba.git</string>
+		<string>https://github.com/seven2013bj/photoba.git</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
 	<string>album.xcodeproj</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
 		<key>D265E4DC285372ADF4A496E1E907207A6606656C</key>
-		<string>../..</string>
+		<string>../../..</string>
 	</dict>
 	<key>IDESourceControlProjectURL</key>
 	<string>https://github.com/szucyq/photoba.git</string>
@@ -28,6 +28,14 @@
 	<string>D265E4DC285372ADF4A496E1E907207A6606656C</string>
 	<key>IDESourceControlProjectWCConfigurations</key>
 	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>D265E4DC285372ADF4A496E1E907207A6606656C</string>
+			<key>IDESourceControlWCCName</key>
+			<string></string>
+		</dict>
 		<dict>
 			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
 			<string>public.vcs.git</string>

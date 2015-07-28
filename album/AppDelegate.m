@@ -20,7 +20,14 @@
 #import <RennSDK/RennSDK.h>
 #import <GoogleOpenSource/GoogleOpenSource.h>
 #import <GooglePlus/GooglePlus.h>
-@interface AppDelegate ()
+#import <sqlite3.h>
+#import "constants.h"
+@interface AppDelegate (){
+
+    NSString *databasePath;
+    sqlite3 *paibaDB;
+
+}
 
 @end
 
@@ -92,56 +99,78 @@
     
     [tabBarItem4 setImage:[UIImage imageNamed:@"icon-settings.png"]];
     [tabBarItem4 setSelectedImage:[UIImage imageNamed:@"icon-settings.png"]];
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *documents = [paths objectAtIndex:0];
+    NSString *database_path = [documents stringByAppendingPathComponent:DBNAME];
     
-    //添加新浪微博应用 注册网址 http://open.weibo.com
+    if (sqlite3_open([database_path UTF8String], &paibaDB) != SQLITE_OK) {
+        sqlite3_close(paibaDB);
+        NSLog(@"数据库打开失败");
+    }
+    NSString *sqlCreateTable1 = @"CREATE TABLE IF NOT EXISTS PHOTOS ( name TEXT, time TEXT, address TEXT,longitude TEXT,latitude TEXT,type TEXT)";
+    NSString *sqlCreateTable2 = @"CREATE TABLE IF NOT EXISTS THEMES ( name TEXT, detail TEXT, tablename TEXT)";
+    NSString *sqlCreateTable3 = @"CREATE TABLE IF NOT EXISTS JOURNEYS (name TEXT, detail TEXT)";
+
+    [self execSql:sqlCreateTable1];
+    [self execSql:sqlCreateTable2];
+    [self execSql:sqlCreateTable3];
+
+//    NSString *docsDir;
+//    NSArray *dirPaths;
+//    
+//    // Get the documents directory
+//    dirPaths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+//    
+//    docsDir = [dirPaths objectAtIndex:0];
+//    
+//    // Build the path to the database file
+//    databasePath = [[NSString alloc] initWithString: [docsDir stringByAppendingPathComponent: @"paiba.db"]];
+//    
+//    NSFileManager *filemgr = [NSFileManager defaultManager];
+//    
+//    if ([filemgr fileExistsAtPath:databasePath] == NO)
+//    {
+//        const char *dbpath = [databasePath UTF8String];
+//        if (sqlite3_open(dbpath, &paibaDB)==SQLITE_OK)
+//        {
+//            char *errMsg;
+//            const char *sql_stmt = "CREATE TABLE IF NOT EXISTS PHOTOS(ID INTEGER PRIMARY KEY AUTOINCREMENT, NAME TEXT, ADDRESS TEXT,TIME TEXT,LONGITUDE,TEXT,LATITUDE,TEXT)";
+//            if (sqlite3_exec(paibaDB, sql_stmt, NULL, NULL, &errMsg)!=SQLITE_OK) {
+//                
+//                NSLog(@"创建表失败");
+//            }
+//        }
+//        else
+//        {
+//            NSLog(@"创建/打开数据库失败");
+//        }
+//    }
+
+    
+    
     [ShareSDK connectSinaWeiboWithAppKey:@"568898243"
                                appSecret:@"38a4f8204cc784f81f9f0daaf31e02e3"
                              redirectUri:@"http://www.sharesdk.cn"];
-//    //当使用新浪微博客户端分享的时候需要按照下面的方法来初始化新浪的平台 （注意：2个方法只用写其中一个就可以）
-//    [ShareSDK  connectSinaWeiboWithAppKey:@"568898243"
-//                                appSecret:@"38a4f8204cc784f81f9f0daaf31e02e3"
-//                              redirectUri:@"http://www.sharesdk.cn"
-//                              weiboSDKCls:[WeiboSDK class]];
-    
-    //添加腾讯微博应用 注册网址 http://dev.t.qq.com
     [ShareSDK connectTencentWeiboWithAppKey:@"801307650"
                                   appSecret:@"ae36f4ee3946e1cbb98d6965b0b2ff5c"
                                 redirectUri:@"http://www.sharesdk.cn"
                                    wbApiCls:[WeiboApi class]];
-    
-    //添加QQ空间应用  注册网址  http://connect.qq.com/intro/login/
     [ShareSDK connectQZoneWithAppKey:@"100371282"
                            appSecret:@"aed9b0303e3ed1e27bae87c33761161d"
                    qqApiInterfaceCls:[QQApiInterface class]
                      tencentOAuthCls:[TencentOAuth class]];
-    
-    //添加QQ应用  注册网址  http://mobile.qq.com/api/
     [ShareSDK connectQQWithQZoneAppKey:@"100371282"
                      qqApiInterfaceCls:[QQApiInterface class]
                        tencentOAuthCls:[TencentOAuth class]];
-    
-    //添加微信应用  http://open.weixin.qq.com
     [ShareSDK connectWeChatWithAppId:@"wx4868b35061f87885"
                            appSecret:@"64020361b8ec4c99936c0e3999a9f249"
                            wechatCls:[WXApi class]];
-    
-    
-    
-    //添加人人网应用 注册网址  http://dev.renren.com
     [ShareSDK connectRenRenWithAppId:@"226427"
                               appKey:@"fc5b8aed373c4c27a05b712acba0f8c3"
                            appSecret:@"f29df781abdd4f49beca5a2194676ca4"
                    renrenClientClass:[RennClient class]];
-    
-       
-    
-   
-    
-    //添加Facebook应用  注册网址 https://developers.facebook.com
     [ShareSDK connectFacebookWithAppKey:@"107704292745179"
                               appSecret:@"38053202e1a5fe26c80c753071f0b573"];
-    
-    //添加Twitter应用  注册网址  https://dev.twitter.com
     [ShareSDK connectTwitterWithConsumerKey:@"mnTGqtXk0TYMXYTN7qUxg"
                              consumerSecret:@"ROkFqr8c3m1HXqS3rm3TJ0WkAJuwBOSaWhPbZ9Ojuc"
                                 redirectUri:@"http://www.sharesdk.cn"];
@@ -162,6 +191,14 @@
     //连接拷贝
     [ShareSDK connectCopy];
     return YES;
+}
+-(void)execSql:(NSString *)sql
+{
+    char *err;
+    if (sqlite3_exec(paibaDB, [sql UTF8String], NULL, NULL, &err) != SQLITE_OK) {
+        sqlite3_close(paibaDB);
+        NSLog(@"数据库操作数据失败!");
+    }
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application {

@@ -7,6 +7,8 @@
 //
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
+#import <sqlite3.h>
+
 #import "MHImagePickerMutilSelector.h"
 #define GET_IMAGE(__NAME__,__TYPE__)    [UIImage imageWithContentsOfFile:[[NSBundle mainBundle] pathForResource:__NAME__ ofType:__TYPE__]]
 
@@ -21,3 +23,5 @@
 #define kNavTitleFont                             20.0
 #define kTitleFont                             18.0
 #define kContentFont                             16.0
+
+#define DBNAME    @"paiba.sqlite"

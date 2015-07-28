@@ -14,6 +14,8 @@
 #import "CustomAlertView.h"
 #import "AddThemeViewController.h"
 #import "ThemeDetailViewController.h"
+#import <sqlite3.h>
+
 #define GET_IMAGE(__NAME__,__TYPE__)    [UIImage imageWithContentsOfFile:[[NSBundle mainBundle] pathForResource:__NAME__ ofType:__TYPE__]]
 
 @class CustomAlertView;
@@ -23,8 +25,13 @@
     UITableView*listTV;
     CustomAlertView *alertView;
     NSMutableArray *imageArray;
-    
+    NSMutableArray *themeArray;
+
     int currentindex;
+    UITextField*    nameTF;
+    UITextField*    detailTF;
+    NSString *databasePath;
+    sqlite3 *paibaDB;
 
 }
 
@@ -36,15 +43,25 @@
 @end
 
 @implementation ThemeViewController
+
+#pragma mark
+#pragma mark view
+
 -(void)viewWillAppear:(BOOL)animated{
     
     self.tabBarController.tabBar.hidden=NO;
     
     
 }
-
+-(void)reloadthemelist{
+    [themeArray removeAllObjects];
+    [self getdata];
+}
 - (void)viewDidLoad {
     [super viewDidLoad];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadthemelist) name:@"reloadthemelist"object:nil];
+    
+
     self.view.backgroundColor=RGB(255, 255, 255, 1);
     imageArray=[[NSMutableArray alloc]init];
     UIImageView *navigationbarimg=[[UIImageView alloc]initWithFrame:CGRectMake(0, 0, kWidth,kNavHeight)];
@@ -68,27 +85,73 @@
     [addbutton setImage:[UIImage imageNamed:@"icon-add"]  forState:UIControlStateNormal];
     [addbutton addTarget:self action:@selector(addAction:) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:addbutton];
+    themeArray=[[NSMutableArray alloc]init];
+    [self getdata];
+    listTV=[[UITableView alloc]initWithFrame:CGRectMake(0, 70, kWidth,kHeight-120) style:UITableViewStylePlain];
+    listTV.delegate  =self;
+    listTV.dataSource=self;
+    listTV.backgroundColor = RGB(255, 255, 255, 1);
+    listTV.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
+    listTV.showsVerticalScrollIndicator=NO;
+    [self.view addSubview:listTV];
+
+}
+#pragma mark
+#pragma mark 获取数据库数据
+
+-(void)getdata{
+
+    sqlite3_stmt *statement;
+    NSString *docsDir;
+    NSArray *dirPaths;
     
-//    listTV=[[UITableView alloc]initWithFrame:CGRectMake(0, 70, kWidth,kHeight-120) style:UITableViewStylePlain];
-//    listTV.delegate  =self;
-//    listTV.dataSource=self;
-//    listTV.backgroundColor = RGB(255, 255, 255, 1);
-//    listTV.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
-//    listTV.showsVerticalScrollIndicator=NO;
-//    [self.view addSubview:listTV];
+    dirPaths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    
+    docsDir = [dirPaths objectAtIndex:0];
+    
+    // Build the path to the database file
+    databasePath = [[NSString alloc] initWithString: [docsDir stringByAppendingPathComponent:@"paiba.sqlite"]];
+
+    const char *dbpath = [databasePath UTF8String];
+
+    if (sqlite3_open(dbpath, &paibaDB) == SQLITE_OK)
+    {
+        NSString *querySQL = [NSString stringWithFormat:@"SELECT name,detail,tablename from THEMES"];
+        const char *query_stmt = [querySQL UTF8String];
+        if (sqlite3_prepare_v2(paibaDB, query_stmt, -1, &statement, NULL) == SQLITE_OK)
+        {
+            if (sqlite3_step(statement) == SQLITE_ROW)
+            {
+                NSString *namestr = [[NSString alloc] initWithUTF8String:(const char *)sqlite3_column_text(statement, 0)];
+                
+                NSString *detailstr = [[NSString alloc] initWithUTF8String:(const char *)sqlite3_column_text(statement, 1    )];
+                
+                NSString *tablenamestr = [[NSString alloc] initWithUTF8String:(const char *)sqlite3_column_text(statement, 2    )];
+                
+                NSDictionary *record=[[NSDictionary alloc]initWithObjectsAndKeys:namestr,@"name",detailstr,@"detail",tablenamestr,@"tablename", nil];
+                [themeArray addObject:record];
+
+            }
+            else {
+            }
+            sqlite3_finalize(statement);
+        }
+        
+        sqlite3_close(paibaDB);
+    }
+    NSLog(@"themeArray is %@",themeArray);
 
 }
--(IBAction)themedetailAction{
-    ThemeDetailViewController *nextcview=[[ThemeDetailViewController alloc]init];
-    [self.navigationController pushViewController:nextcview animated:YES];
 
-}
+#pragma mark
+#pragma mark action
+//添加新主题
 -(void)addAction:(UIButton*)sender{
     AddThemeViewController *nextview=[[AddThemeViewController alloc]init];
     [self.navigationController pushViewController:nextview animated:YES];
     
 }
-
+//拍照弹出拍照、选照片选项
 -(void)photoAction:(UIButton*)sender{
     
     UIActionSheet *choiceSheet = [[UIActionSheet alloc] initWithTitle:nil
@@ -99,8 +162,9 @@
     [choiceSheet showInView:self.view];
  
 }
+
 #pragma mark
-#pragma UIActionSheet Delegate
+#pragma mark UIActionSheet Delegate
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
 {
     switch (buttonIndex) {
@@ -164,7 +228,9 @@
             break;
     }
 }
-//这里是主要函数
+
+#pragma mark
+#pragma mark 拍照调用相册详细方法
 - (void)setupImagePicker:(UIImagePickerControllerSourceType)sourceType
 {
     self.imagePickerController.sourceType = sourceType;
@@ -232,22 +298,6 @@
         controlView = nil;
     }
 }
-#pragma mark -
-#pragma UIImagePickerController Delegate
-//- (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
-//{
-//    if ([[info objectForKey:UIImagePickerControllerMediaType] isEqualToString:(__bridge NSString *)kUTTypeImage]) {
-//        UIImage* image = [info objectForKey:@"UIImagePickerControllerOriginalImage"];
-//        
-//    }
-//    
-//}
-//
-//- (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker
-//{
-//    [picker dismissViewControllerAnimated:YES completion:nil];
-//}
-
 
 //拍照
 - (void)stillImage:(id)sender
@@ -278,10 +328,9 @@
 }
 
 
-#pragma mark - UIImagePickerController回调
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker
 {
-    [picker dismissModalViewControllerAnimated:YES];
+    [picker dismissViewControllerAnimated:YES completion:nil];
     
 }
 
@@ -321,13 +370,13 @@
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     
-    return 4;
+    return themeArray.count;
     
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return 60;
+    return 80;
 }
 
 -(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
@@ -341,18 +390,27 @@
     [bgView setBackgroundColor:[UIColor whiteColor]];
     [cell addSubview:bgView];
     
+    NSDictionary *record=[themeArray objectAtIndex:indexPath.row];
     
-    UILabel *titleLabel = [[UILabel alloc]initWithFrame:CGRectMake(20, 10, 100, 40)];
-    titleLabel.font = [UIFont systemFontOfSize:16];
-    titleLabel.textColor = RGB(60, 60, 60,1);
-    titleLabel.textAlignment = NSTextAlignmentLeft;
-    [bgView addSubview:titleLabel];
+    UIImageView *iconImageView = [[UIImageView alloc]initWithFrame:CGRectMake(10, 15, 80, 50)];
+    [iconImageView setImage:[UIImage imageNamed:@"Chatroom-Bg"]];
+    [bgView addSubview:iconImageView];
     
-    UILabel *schoolLabel = [[UILabel alloc]initWithFrame:CGRectMake(120, 10, kWidth-140, 40)];
-    schoolLabel.font = [UIFont systemFontOfSize:16];
-    schoolLabel.textColor = RGB(60, 60, 60,1);
-    schoolLabel.textAlignment = NSTextAlignmentLeft;
-    [bgView addSubview:schoolLabel];
+    UILabel *nameLabel = [[UILabel alloc]initWithFrame:CGRectMake(100, 10, kWidth-110, 25)];
+    nameLabel.font = [UIFont systemFontOfSize:16];
+    nameLabel.textColor = RGB(60, 60, 60,1);
+    nameLabel.textAlignment = NSTextAlignmentLeft;
+    nameLabel.numberOfLines=0;
+    [nameLabel setText:[record objectForKey:@"name" ]];
+    [bgView addSubview:nameLabel];
+    
+    UILabel *detailLabel = [[UILabel alloc]initWithFrame:CGRectMake(100, 30, kWidth-110, 30)];
+    detailLabel.font = [UIFont systemFontOfSize:14];
+    detailLabel.textColor = RGB(150, 150, 150,1);
+    detailLabel.textAlignment = NSTextAlignmentLeft;
+    detailLabel.numberOfLines=0;
+    [detailLabel setText:[record objectForKey:@"detail"]];
+    [bgView addSubview:detailLabel];
     return cell;
 }
 
