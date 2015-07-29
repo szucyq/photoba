@@ -99,10 +99,11 @@
     
     [tabBarItem4 setImage:[UIImage imageNamed:@"icon-settings.png"]];
     [tabBarItem4 setSelectedImage:[UIImage imageNamed:@"icon-settings.png"]];
+    
+    //添加数据库，新建三个表
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     NSString *documents = [paths objectAtIndex:0];
     NSString *database_path = [documents stringByAppendingPathComponent:DBNAME];
-    
     if (sqlite3_open([database_path UTF8String], &paibaDB) != SQLITE_OK) {
         sqlite3_close(paibaDB);
         NSLog(@"数据库打开失败");
@@ -110,44 +111,28 @@
     NSString *sqlCreateTable1 = @"CREATE TABLE IF NOT EXISTS PHOTOS ( name TEXT, time TEXT, address TEXT,longitude TEXT,latitude TEXT,type TEXT)";
     NSString *sqlCreateTable2 = @"CREATE TABLE IF NOT EXISTS THEMES ( name TEXT, detail TEXT, tablename TEXT)";
     NSString *sqlCreateTable3 = @"CREATE TABLE IF NOT EXISTS JOURNEYS (name TEXT, detail TEXT)";
+    
+    NSString *sqlCreateTable4 = @"CREATE TABLE IF NOT EXISTS THEMEPHOTOS ( name TEXT, time TEXT, address TEXT,longitude TEXT,latitude TEXT,type TEXT,detail TEXT)";
+    NSString *sqlCreateTable5 = @"CREATE TABLE IF NOT EXISTS JOURNEYPHOTOS ( name TEXT, time TEXT, address TEXT,longitude TEXT,latitude TEXT,type TEXT,detail TEXT)";
 
     [self execSql:sqlCreateTable1];
     [self execSql:sqlCreateTable2];
     [self execSql:sqlCreateTable3];
+    [self execSql:sqlCreateTable4];
+    [self execSql:sqlCreateTable5];
 
-//    NSString *docsDir;
-//    NSArray *dirPaths;
-//    
-//    // Get the documents directory
-//    dirPaths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-//    
-//    docsDir = [dirPaths objectAtIndex:0];
-//    
-//    // Build the path to the database file
-//    databasePath = [[NSString alloc] initWithString: [docsDir stringByAppendingPathComponent: @"paiba.db"]];
-//    
-//    NSFileManager *filemgr = [NSFileManager defaultManager];
-//    
-//    if ([filemgr fileExistsAtPath:databasePath] == NO)
-//    {
-//        const char *dbpath = [databasePath UTF8String];
-//        if (sqlite3_open(dbpath, &paibaDB)==SQLITE_OK)
-//        {
-//            char *errMsg;
-//            const char *sql_stmt = "CREATE TABLE IF NOT EXISTS PHOTOS(ID INTEGER PRIMARY KEY AUTOINCREMENT, NAME TEXT, ADDRESS TEXT,TIME TEXT,LONGITUDE,TEXT,LATITUDE,TEXT)";
-//            if (sqlite3_exec(paibaDB, sql_stmt, NULL, NULL, &errMsg)!=SQLITE_OK) {
-//                
-//                NSLog(@"创建表失败");
-//            }
-//        }
-//        else
-//        {
-//            NSLog(@"创建/打开数据库失败");
-//        }
-//    }
+   //在document文件夹中添加随手拍、主题、行程文件夹
+    NSString * photoDir = [documents stringByAppendingPathComponent:@"/PhotoFile"];
+    [[NSFileManager defaultManager] createDirectoryAtPath:photoDir withIntermediateDirectories:YES attributes:nil error:nil];
 
     
+    NSString * themeDir = [documents stringByAppendingPathComponent:@"/ThemeFile"];
+    [[NSFileManager defaultManager] createDirectoryAtPath:themeDir withIntermediateDirectories:YES attributes:nil error:nil];
     
+    NSString * journeyDir = [documents stringByAppendingPathComponent:@"/JourneyFile"];
+    [[NSFileManager defaultManager] createDirectoryAtPath:journeyDir withIntermediateDirectories:YES attributes:nil error:nil];
+    
+    //初始化分享sdk
     [ShareSDK connectSinaWeiboWithAppKey:@"568898243"
                                appSecret:@"38a4f8204cc784f81f9f0daaf31e02e3"
                              redirectUri:@"http://www.sharesdk.cn"];
@@ -175,20 +160,16 @@
                              consumerSecret:@"ROkFqr8c3m1HXqS3rm3TJ0WkAJuwBOSaWhPbZ9Ojuc"
                                 redirectUri:@"http://www.sharesdk.cn"];
     
-    [ShareSDK connectGooglePlusWithClientId:@"232554794995.apps.googleusercontent.com"        //该参数传入应用的ClientID
-                               clientSecret:@"PEdFgtrMw97aCvf0joQj7EMk"                                          //该参数传入应用的ClientSecret
-                                redirectUri:@"http://localhost"                                                               //回调地址
+    [ShareSDK connectGooglePlusWithClientId:@"232554794995.apps.googleusercontent.com"
+                               clientSecret:@"PEdFgtrMw97aCvf0joQj7EMk"
+                                redirectUri:@"http://localhost"
                                   signInCls:[GPPSignIn class]
                                    shareCls:[GPPShare class]];
     [ShareSDK importGooglePlusClass:[GPPSignIn class]
                          shareClass:[GPPShare class]];
-    //连接短信分享
     [ShareSDK connectSMS];
-    //连接邮件
     [ShareSDK connectMail];
-    //连接打印
     [ShareSDK connectAirPrint];
-    //连接拷贝
     [ShareSDK connectCopy];
     return YES;
 }

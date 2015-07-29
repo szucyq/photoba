@@ -93,6 +93,7 @@
 		D054D2021B5651BC00C74490 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D054D2011B5651BC00C74490 /* Images.xcassets */; };
 		D054D2091B56618100C74490 /* CustomAlertView.m in Sources */ = {isa = PBXBuildFile; fileRef = D054D2061B56618100C74490 /* CustomAlertView.m */; };
 		D054D20A1B56618100C74490 /* UIButton+Badge.m in Sources */ = {isa = PBXBuildFile; fileRef = D054D2081B56618100C74490 /* UIButton+Badge.m */; };
+		D0F8933B1B67786A0029A198 /* MyTime.m in Sources */ = {isa = PBXBuildFile; fileRef = D0F8933A1B67786A0029A198 /* MyTime.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -220,6 +221,8 @@
 		D054D2061B56618100C74490 /* CustomAlertView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CustomAlertView.m; path = thirdworkframe/CustomAlertView.m; sourceTree = "<group>"; };
 		D054D2071B56618100C74490 /* UIButton+Badge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIButton+Badge.h"; path = "thirdworkframe/UIButton+Badge.h"; sourceTree = "<group>"; };
 		D054D2081B56618100C74490 /* UIButton+Badge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UIButton+Badge.m"; path = "thirdworkframe/UIButton+Badge.m"; sourceTree = "<group>"; };
+		D0F893391B67786A0029A198 /* MyTime.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MyTime.h; path = thirdworkframe/MyTime.h; sourceTree = "<group>"; };
+		D0F8933A1B67786A0029A198 /* MyTime.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MyTime.m; path = thirdworkframe/MyTime.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -534,6 +537,8 @@
 				D054D2061B56618100C74490 /* CustomAlertView.m */,
 				D054D2071B56618100C74490 /* UIButton+Badge.h */,
 				D054D2081B56618100C74490 /* UIButton+Badge.m */,
+				D0F893391B67786A0029A198 /* MyTime.h */,
+				D0F8933A1B67786A0029A198 /* MyTime.m */,
 			);
 			name = thirdworkframe;
 			sourceTree = "<group>";
@@ -673,6 +678,7 @@
 				D054D2091B56618100C74490 /* CustomAlertView.m in Sources */,
 				D00A8BA81B56AEAE0017F5F1 /* HelpViewController.m in Sources */,
 				D054D1FF1B56518700C74490 /* SettingViewController.m in Sources */,
+				D0F8933B1B67786A0029A198 /* MyTime.m in Sources */,
 				D00A8C371B573BA10017F5F1 /* AddThemeViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

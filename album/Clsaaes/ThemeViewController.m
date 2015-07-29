@@ -15,7 +15,7 @@
 #import "AddThemeViewController.h"
 #import "ThemeDetailViewController.h"
 #import <sqlite3.h>
-
+#import "MyTime.h"
 #define GET_IMAGE(__NAME__,__TYPE__)    [UIImage imageWithContentsOfFile:[[NSBundle mainBundle] pathForResource:__NAME__ ofType:__TYPE__]]
 
 @class CustomAlertView;
@@ -46,17 +46,13 @@
 
 #pragma mark
 #pragma mark view
-
 -(void)viewWillAppear:(BOOL)animated{
     
     self.tabBarController.tabBar.hidden=NO;
     
     
 }
--(void)reloadthemelist{
-    [themeArray removeAllObjects];
-    [self getdata];
-}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadthemelist) name:@"reloadthemelist"object:nil];
@@ -96,22 +92,21 @@
     [self.view addSubview:listTV];
 
 }
+
 #pragma mark
 #pragma mark 获取数据库数据
+//刷新数据列表
+-(void)reloadthemelist{
+    [themeArray removeAllObjects];
+    [self getdata];
+}
 
+//从数据库中筛选数据
 -(void)getdata{
 
     sqlite3_stmt *statement;
-    NSString *docsDir;
-    NSArray *dirPaths;
     
-    dirPaths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    
-    docsDir = [dirPaths objectAtIndex:0];
-    
-    // Build the path to the database file
-    databasePath = [[NSString alloc] initWithString: [docsDir stringByAppendingPathComponent:@"paiba.sqlite"]];
-
+    databasePath=[MyTime dbpathStr];
     const char *dbpath = [databasePath UTF8String];
 
     if (sqlite3_open(dbpath, &paibaDB) == SQLITE_OK)
@@ -120,7 +115,8 @@
         const char *query_stmt = [querySQL UTF8String];
         if (sqlite3_prepare_v2(paibaDB, query_stmt, -1, &statement, NULL) == SQLITE_OK)
         {
-            if (sqlite3_step(statement) == SQLITE_ROW)
+            
+            while (sqlite3_step(statement) == SQLITE_ROW)
             {
                 NSString *namestr = [[NSString alloc] initWithUTF8String:(const char *)sqlite3_column_text(statement, 0)];
                 
@@ -132,15 +128,13 @@
                 [themeArray addObject:record];
 
             }
-            else {
-            }
             sqlite3_finalize(statement);
         }
         
         sqlite3_close(paibaDB);
     }
     NSLog(@"themeArray is %@",themeArray);
-
+    [listTV reloadData];
 }
 
 #pragma mark
@@ -151,6 +145,7 @@
     [self.navigationController pushViewController:nextview animated:YES];
     
 }
+
 //拍照弹出拍照、选照片选项
 -(void)photoAction:(UIButton*)sender{
     
@@ -188,40 +183,23 @@
             [doneItem setTitle:@"取消"];
             
             [self presentViewController:self.imagePickerController animated:YES completion:nil];
-
-            
-//            UIImagePickerController *imagePicker = [[UIImagePickerController alloc] init];
-//            imagePicker.delegate = self;
-//            imagePicker.allowsEditing = YES;
-//            imagePicker.sourceType = UIImagePickerControllerSourceTypeCamera;
-//            //            [self presentModalViewController:imagePicker animated:YES];
-//            [self.view.window.rootViewController presentViewController:imagePicker animated:YES completion:nil];
         }
             break;
         case 1://本地相簿
         {
             currentindex=1;
             
-            MHImagePickerMutilSelector* imagePickerMutilSelector=[MHImagePickerMutilSelector standardSelector];//自动释放
-            imagePickerMutilSelector.delegate=self;//设置代理
-            
+            MHImagePickerMutilSelector* imagePickerMutilSelector=[MHImagePickerMutilSelector standardSelector];
+            imagePickerMutilSelector.delegate=self;
             UIImagePickerController* picker=[[UIImagePickerController alloc] init];
-            picker.delegate=imagePickerMutilSelector;//将UIImagePicker的代理指向到imagePickerMutilSelector
+            picker.delegate=imagePickerMutilSelector;
             [picker setAllowsEditing:NO];
             picker.sourceType=UIImagePickerControllerSourceTypePhotoLibrary;
             picker.modalTransitionStyle= UIModalTransitionStyleCoverVertical;
-            picker.navigationController.delegate=imagePickerMutilSelector;//将UIImagePicker的导航代理指向到imagePickerMutilSelector
-            
-            imagePickerMutilSelector.imagePicker=picker;//使imagePickerMutilSelector得知其控制的UIImagePicker实例，为释放时需要。
-            
+            picker.navigationController.delegate=imagePickerMutilSelector;
+            imagePickerMutilSelector.imagePicker=picker;
             [self presentViewController:picker animated:YES completion:nil];
 
-//            UIImagePickerController *imagePicker = [[UIImagePickerController alloc] init];
-//            imagePicker.delegate = self;
-//            imagePicker.allowsEditing = YES;
-//            imagePicker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
-//            //            [self presentModalViewController:imagePicker animated:YES];
-//            [self presentViewController:imagePicker animated:YES completion:nil];
         }
             break;
         default:
@@ -237,7 +215,6 @@
     
     if (sourceType == UIImagePickerControllerSourceTypeCamera)
     {
-        // 不使用系统的控制界面
         self.imagePickerController.showsCameraControls = NO;
         
         UIToolbar *controlView = [[UIToolbar alloc] initWithFrame:CGRectMake(0, self.view.frame.size.height-44, self.view.frame.size.width, 44)];
@@ -310,6 +287,7 @@
 {
     [self imagePickerControllerDidCancel:self.imagePickerController];
 }
+
 - (void)changeCameraDevice:(id)sender
 {
     if (self.imagePickerController.cameraDevice == UIImagePickerControllerCameraDeviceRear) {
@@ -322,12 +300,6 @@
     }
 }
 
-- (IBAction)cancel:(id)sender
-{
-    [alertView dismissWithClickedButtonIndex:0 animated:YES];
-}
-
-
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker
 {
     [picker dismissViewControllerAnimated:YES completion:nil];
@@ -339,29 +311,43 @@
     
     if (currentindex==0) {
         
-    //保存相片到数组，这种方法不可取,会占用过多内存
-    //如果是一张就无所谓了，到时候自己改
     [imageArray addObject:[info objectForKey:UIImagePickerControllerOriginalImage]];
-    //    if (singleMode) {
-    //        [picker dismissModalViewControllerAnimated:YES];
-    //        [self refreshImage];
-    //    }
-    //    else if (imageArray.count == 1) {
-    //多张拍摄,不必每次都执行
     UIBarButtonItem *flashItem = [[(UIToolbar *)self.imagePickerController.cameraOverlayView items] lastObject];
     flashItem.title = @"完成";
-    //    }
     
     UIToolbar *view = (UIToolbar *)self.imagePickerController.cameraOverlayView;
     UIBarButtonItem *cameraItem = [[view items] objectAtIndex:3];
     [(UIButton *)cameraItem.customView setBadge:(int)imageArray.count];
     }
     else if (currentindex==1){
+        
+        
         [picker dismissViewControllerAnimated:YES completion:nil];
 
     
     }
 
+}
+
+//多选图片
+-(void)imagePickerMutilSelectorDidGetImages:(NSArray *)imagesArray
+{
+    NSMutableArray*  importItems=[[NSMutableArray alloc] initWithArray:imagesArray copyItems:YES];
+    NSLog(@"importItems is %@",importItems);
+    
+    NSString *timestr=[MyTime timenowStr];
+    
+    for (int i=0; i<importItems.count; i++) {
+
+        NSData*mutimageData=UIImagePNGRepresentation([importItems objectAtIndex:i]);
+        NSString * DocumentsPath = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents/ThemeFile"];
+        NSFileManager *fileManager = [NSFileManager defaultManager];
+        [fileManager createDirectoryAtPath:DocumentsPath withIntermediateDirectories:YES attributes:nil error:nil];
+        NSString *imagenamestr=[NSString stringWithFormat:@"/%@%d.png",timestr,i ];
+        [fileManager createFileAtPath:[DocumentsPath stringByAppendingString:imagenamestr] contents:mutimageData attributes:nil];
+        
+        
+    }
 }
 
 #pragma mark
@@ -414,19 +400,18 @@
     return cell;
 }
 
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+    
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    ThemeDetailViewController *nextview=[[ThemeDetailViewController alloc]init];
+    nextview.themeDic=[themeArray objectAtIndex:indexPath.row];
+    [self.navigationController pushViewController:nextview animated:YES];
+    
+}
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
 
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
 
 @end

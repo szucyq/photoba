@@ -9,13 +9,14 @@
 #import "AddThemeViewController.h"
 #import "constants.h"
 #import <sqlite3.h>
-
+#import "MyTime.h"
 @interface AddThemeViewController ()<UITextFieldDelegate>{
 
     UITextField *nameTF;
     UITextField *detailTF;
     NSString *databasePath;
     sqlite3 *paibaDB;
+    MyTime  *myTime;
 
 }
 
@@ -119,33 +120,10 @@
     
     }else{
         
-        
-        
         sqlite3_stmt *statement;
-        NSString *docsDir;
-        NSArray *dirPaths;
-        
-        
-        
-        NSDate *date = [NSDate date];
-        NSTimeZone *zone = [NSTimeZone systemTimeZone];
-        NSInteger interval = [zone secondsFromGMTForDate: date];
-        NSDate *localeDate = [date  dateByAddingTimeInterval: interval];
-        NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-        [dateFormatter setDateFormat: @"yyyy-MM-dd HH:mm:ss"];
-        NSTimeInterval time=[localeDate timeIntervalSince1970]*1000;
-        long long int datess = (long long int)time;
-        NSString *tablenameStr=[NSString stringWithFormat:@"%lld",datess];
 
-        
-        // Get the documents directory
-        dirPaths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-        
-        docsDir = [dirPaths objectAtIndex:0];
-        
-        // Build the path to the database file
-        databasePath = [[NSString alloc] initWithString: [docsDir stringByAppendingPathComponent:@"paiba.sqlite"]];
-
+        NSString * tablenameStr=[@"A" stringByAppendingString:[MyTime timenowStr]];
+        databasePath=[MyTime dbpathStr];
         const char *dbpath = [databasePath UTF8String];
         
         if (sqlite3_open(dbpath, &paibaDB)==SQLITE_OK) {
@@ -155,6 +133,15 @@
             sqlite3_prepare_v2(paibaDB, insert_stmt, -1, &statement, NULL);
             if (sqlite3_step(statement)==SQLITE_DONE) {
                 [[NSNotificationCenter defaultCenter] postNotificationName:@"reloadthemelist"object:nil];
+                
+                NSString *creattablesql=[NSString stringWithFormat:@"CREATE TABLE IF NOT EXISTS %@ ( name TEXT, time TEXT, address TEXT,longitude TEXT,latitude TEXT,type TEXT)",tablenameStr];
+                NSLog(@"creattablesql%@",creattablesql);
+                char *err;
+                if (sqlite3_exec(paibaDB, [creattablesql UTF8String], NULL, NULL, &err) != SQLITE_OK) {
+                    sqlite3_close(paibaDB);
+                    NSLog(@"数据库操作数据失败!");
+                }
+
                 [self backAction];
             }
             else

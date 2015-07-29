@@ -10,4 +10,6 @@
 
 @interface ThemeDetailViewController : UIViewController
 
+@property (nonatomic,strong) NSDictionary *themeDic;
+
 @end

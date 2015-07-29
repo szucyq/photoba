@@ -14,7 +14,8 @@
 @end
 
 @implementation ThemeDetailViewController
-
+#pragma mark
+#pragma mark view methode;
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.view.backgroundColor=RGB(255, 255, 255, 1);
@@ -29,13 +30,8 @@
     titleText.textColor=[UIColor whiteColor];
     titleText.textAlignment = NSTextAlignmentCenter;
     titleText.font            = [UIFont systemFontOfSize:kNavTitleFont];
-    [titleText setText:@"宝宝成长日记"];
+    [titleText setText:[self.themeDic objectForKey:@"name"]];
     [self.view addSubview:titleText];
-    
-    //    UIButton *photobutton=[[UIButton alloc]initWithFrame:CGRectMake(20, 30, 29, 29)];
-    //    [photobutton setImage:[UIImage imageNamed:@"icon-camera"]  forState:UIControlStateNormal];
-    //    [photobutton addTarget:self action:@selector(photoAction:) forControlEvents:UIControlEventTouchUpInside];
-    //    [self.view addSubview:photobutton];
     
     UIButton *photobutton=[[UIButton alloc]initWithFrame:CGRectMake(kWidth-80, 30, 29, 29)];
     [photobutton setImage:[UIImage imageNamed:@"icon-camera"]  forState:UIControlStateNormal];
@@ -57,18 +53,25 @@
     [backbutton addTarget:self action:@selector(backAction) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:backbutton];
 }
+
+#pragma mark
+#pragma mark action
+
 -(void)photoAction:(UIButton*)sender{
 
 }
+
 -(void)backAction{
     
     [self.navigationController popViewControllerAnimated:YES];
 }
+
 -(void)shareAction:(UIButton*)sender{
     
     Html5ViewController *nextview=[[Html5ViewController alloc]init];
     [self.navigationController pushViewController:nextview animated:YES];
 }
+
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
