@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "Photo.h"
 
 @interface Html5ViewController : UIViewController
 

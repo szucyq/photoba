@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		32B7175F1B6AFB5D004481C0 /* Photo.m in Sources */ = {isa = PBXBuildFile; fileRef = 32B7175E1B6AFB5D004481C0 /* Photo.m */; };
+		32B717611B6AFCD1004481C0 /* share.css in Resources */ = {isa = PBXBuildFile; fileRef = 32B717601B6AFCD1004481C0 /* share.css */; };
 		D00A8BA81B56AEAE0017F5F1 /* HelpViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D00A8BA61B56AEAE0017F5F1 /* HelpViewController.m */; };
 		D00A8BA91B56AEAE0017F5F1 /* HelpViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = D00A8BA71B56AEAE0017F5F1 /* HelpViewController.xib */; };
 		D00A8BAD1B56AEC90017F5F1 /* SettingDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D00A8BAB1B56AEC90017F5F1 /* SettingDetailViewController.m */; };
@@ -107,6 +109,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		32B7175D1B6AFB5D004481C0 /* Photo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Photo.h; sourceTree = "<group>"; };
+		32B7175E1B6AFB5D004481C0 /* Photo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Photo.m; sourceTree = "<group>"; };
+		32B717601B6AFCD1004481C0 /* share.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = share.css; sourceTree = "<group>"; };
 		32F988831B5F823E001CBD4F /* constants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = constants.h; sourceTree = "<group>"; };
 		D00A8BA51B56AEAE0017F5F1 /* HelpViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HelpViewController.h; path = Clsaaes/HelpViewController.h; sourceTree = "<group>"; };
 		D00A8BA61B56AEAE0017F5F1 /* HelpViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = HelpViewController.m; path = Clsaaes/HelpViewController.m; sourceTree = "<group>"; };
@@ -449,11 +454,13 @@
 		D054D1C31B5650DF00C74490 /* album */ = {
 			isa = PBXGroup;
 			children = (
+				32B7175D1B6AFB5D004481C0 /* Photo.h */,
+				32B7175E1B6AFB5D004481C0 /* Photo.m */,
 				D02398821B5F807700172986 /* constants.h */,
+				32F988831B5F823E001CBD4F /* constants.h */,
 				D054D2041B56614200C74490 /* thirdworkframe */,
 				D054D1C81B5650DF00C74490 /* AppDelegate.h */,
 				D054D1C91B5650DF00C74490 /* AppDelegate.m */,
-				32F988831B5F823E001CBD4F /* constants.h */,
 				D054D1ED1B56515000C74490 /* PhotoViewController.h */,
 				D054D1EE1B56515000C74490 /* PhotoViewController.m */,
 				D054D1EF1B56515000C74490 /* PhotoViewController.xib */,
@@ -500,6 +507,7 @@
 		D054D1C41B5650DF00C74490 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				32B717601B6AFCD1004481C0 /* share.css */,
 				D054D1C51B5650DF00C74490 /* Info.plist */,
 				D054D1C61B5650DF00C74490 /* main.m */,
 			);
@@ -639,6 +647,7 @@
 				D054D1D81B5650DF00C74490 /* LaunchScreen.xib in Resources */,
 				D00A8C021B5734810017F5F1 /* TencentOpenApi_IOS_Bundle.bundle in Resources */,
 				D00A8BA91B56AEAE0017F5F1 /* HelpViewController.xib in Resources */,
+				32B717611B6AFCD1004481C0 /* share.css in Resources */,
 				D054D1F61B56516300C74490 /* ThemeViewController.xib in Resources */,
 				D00A8C4C1B57462E0017F5F1 /* Html5ViewController.xib in Resources */,
 				D00A8C031B5734810017F5F1 /* RennSDK.bundle in Resources */,
@@ -665,6 +674,7 @@
 				D00A8BAD1B56AEC90017F5F1 /* SettingDetailViewController.m in Sources */,
 				D00A8C331B57383F0017F5F1 /* MHImagePickerMutilSelector.m in Sources */,
 				D054D1F01B56515000C74490 /* PhotoViewController.m in Sources */,
+				32B7175F1B6AFB5D004481C0 /* Photo.m in Sources */,
 				D00A8C3C1B573ED80017F5F1 /* ThemeDetailViewController.m in Sources */,
 				D00A8C4B1B57462E0017F5F1 /* Html5ViewController.m in Sources */,
 				D054D1FA1B56517400C74490 /* JourneyViewController.m in Sources */,

@@ -5,20 +5,20 @@
 	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
 	<false/>
 	<key>IDESourceControlProjectIdentifier</key>
-	<string>9D5ECE58-3F73-4A31-8232-743D9647F4CC</string>
+	<string>69864C9D-B3A1-43A3-BEEA-72A00D0FB11B</string>
 	<key>IDESourceControlProjectName</key>
 	<string>album</string>
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
 		<key>D265E4DC285372ADF4A496E1E907207A6606656C</key>
-		<string>https://github.com/seven2013bj/photoba.git</string>
+		<string>https://github.com/szucyq/photoba.git</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
 	<string>album.xcodeproj</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
 		<key>D265E4DC285372ADF4A496E1E907207A6606656C</key>
-		<string>../../..</string>
+		<string>../..</string>
 	</dict>
 	<key>IDESourceControlProjectURL</key>
 	<string>https://github.com/szucyq/photoba.git</string>
@@ -28,14 +28,6 @@
 	<string>D265E4DC285372ADF4A496E1E907207A6606656C</string>
 	<key>IDESourceControlProjectWCConfigurations</key>
 	<array>
-		<dict>
-			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
-			<string>public.vcs.git</string>
-			<key>IDESourceControlWCCIdentifierKey</key>
-			<string>D265E4DC285372ADF4A496E1E907207A6606656C</string>
-			<key>IDESourceControlWCCName</key>
-			<string></string>
-		</dict>
 		<dict>
 			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
 			<string>public.vcs.git</string>

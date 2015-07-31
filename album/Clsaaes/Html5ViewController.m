@@ -18,8 +18,10 @@
 #import <GoogleOpenSource/GoogleOpenSource.h>
 #import <GooglePlus/GooglePlus.h>
 
-@interface Html5ViewController ()
 
+@interface Html5ViewController ()
+@property (nonatomic,retain)NSMutableArray *picArr;
+@property (nonatomic, retain)  UIWebView *contentWebView;
 @end
 
 @implementation Html5ViewController
@@ -57,6 +59,22 @@
     [backbutton setTitleColor:[UIColor grayColor] forState:UIControlStateHighlighted];
     [backbutton addTarget:self action:@selector(backAction) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:backbutton];
+    
+    self.picArr=[NSMutableArray array];
+    //web view
+    self.contentWebView=[[UIWebView alloc]initWithFrame:CGRectMake(0, 0, kWidth, kHeight)];
+    //    self.contentWebView.delegate=self;
+    [self.view addSubview:self.contentWebView];
+    //images
+    for (int i=0; i<3; i++) {
+        Photo *photo=[[Photo alloc]init];
+        photo.name=[NSString stringWithFormat:@"%@%d",@"这个是图片:",i];
+        photo.imagePath=[[NSBundle mainBundle]pathForResource:[NSString stringWithFormat:@"%@%d",@"guide_",i] ofType:@"png"];
+        photo.description=[NSString stringWithFormat:@"%@%d",@"这个是备注:",i];
+        [self.picArr addObject:photo];
+    }
+    //生成html
+    [self generateHtmlWith:self.picArr];
 }
 -(void)backAction{
     
@@ -112,5 +130,31 @@
     // Pass the selected object to the new view controller.
 }
 */
-
+- (void)generateHtmlWith:(NSMutableArray*)sender{
+    NSLog(@"pic arr:%@",sender);
+    //css
+    NSString *cssPath=[[NSBundle mainBundle]pathForResource:@"share" ofType:@"css"];
+    NSString *cssContent=[NSString stringWithContentsOfURL:[NSURL fileURLWithPath:cssPath] encoding:NSUTF8StringEncoding error:nil];
+    //titile
+    NSString *title=@"我2015年深圳游玩东东";
+    //source
+    NSString *source=@"深圳";
+    
+    //image
+    NSString *htmlFileBegin=[NSString stringWithFormat:@"<html><head></head><style>%@</style><body><h3>%@</h3><h4><span class=\"source\">%@</span></h4>",cssContent,title,source];
+    NSString *htmlContent=[NSString string];
+    for(int i=0;i<sender.count;i++){
+        Photo *photo=[sender objectAtIndex:i];
+        NSString *desc=photo.description;
+        NSString *imagePath=photo.imagePath;
+        NSLog(@"desc:%@-path:%@",desc,imagePath);
+        htmlContent=[htmlContent stringByAppendingString:[NSString stringWithFormat:@"<img src=\"%@\"/><p>%@</p>",imagePath,desc]];
+        NSLog(@"html content:%@",htmlContent);
+    }
+    NSString *htmlFileEnd=[NSString stringWithFormat:@"%@",@"</body></html>"];
+    NSString *html=[NSString stringWithFormat:@"%@%@%@",htmlFileBegin,htmlContent,htmlFileEnd];
+    
+    NSLog(@"html:%@",html);
+    [self.contentWebView loadHTMLString:html baseURL:[NSURL fileURLWithPath:[[NSBundle mainBundle] resourcePath]]];
+}
 @end

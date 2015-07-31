@@ -1,0 +1,15 @@
+/*body {background-color:#ffffff;line-height:180%;font-size:14px;}*/
+
+h3{ text-align:center;position:relative;}
+
+p{text-align:center;text-justify:inter-ideograph;}
+
+
+h4{ font-size:12px; color:#808080; text-align:center; border-bottom:1px solid #666;position:relative;top:-5px;}
+
+h4 span{ margin-right:20px;}
+/*h4 .source{font-size:1em;}*/
+
+/*img{position:relative;float:right;width:80px;height:60px;margin-left:5px;margin-bottom:5px;}*/
+
+img{width:100%;margin-left:0px;margin-bottom:15px;}
