@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>69864C9D-B3A1-43A3-BEEA-72A00D0FB11B</string>
+	<key>IDESourceControlProjectName</key>
+	<string>album</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>D265E4DC285372ADF4A496E1E907207A6606656C</key>
+		<string>https://github.com/szucyq/photoba.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>album.xcodeproj</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>D265E4DC285372ADF4A496E1E907207A6606656C</key>
+		<string>../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>https://github.com/szucyq/photoba.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>111</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>D265E4DC285372ADF4A496E1E907207A6606656C</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>D265E4DC285372ADF4A496E1E907207A6606656C</string>
+			<key>IDESourceControlWCCName</key>
+			<string>photoba</string>
+		</dict>
+	</array>
+</dict>
+</plist>
