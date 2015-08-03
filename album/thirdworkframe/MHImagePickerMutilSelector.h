@@ -12,6 +12,7 @@
 
 @optional
 -(void)imagePickerMutilSelectorDidGetImages:(NSArray*)imageArray;
+-(void)imagePickerMutilSelectorDidGetImages:(NSArray*)imageArray GetInfos:(NSArray *)infosArray;
 
 @end
 
@@ -21,6 +22,8 @@
     UILabel* textlabel;
     UIImagePickerController*    imagePicker;
     NSMutableArray* pics;
+    NSMutableArray* infos;
+
     UITableView*    tbv;
     id<MHImagePickerMutilSelectorDelegate>  delegate;
 }

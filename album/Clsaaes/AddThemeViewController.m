@@ -133,14 +133,6 @@
             sqlite3_prepare_v2(paibaDB, insert_stmt, -1, &statement, NULL);
             if (sqlite3_step(statement)==SQLITE_DONE) {
                 [[NSNotificationCenter defaultCenter] postNotificationName:@"reloadthemelist"object:nil];
-                
-                NSString *creattablesql=[NSString stringWithFormat:@"CREATE TABLE IF NOT EXISTS %@ ( name TEXT, time TEXT, address TEXT,longitude TEXT,latitude TEXT,type TEXT)",tablenameStr];
-                NSLog(@"creattablesql%@",creattablesql);
-                char *err;
-                if (sqlite3_exec(paibaDB, [creattablesql UTF8String], NULL, NULL, &err) != SQLITE_OK) {
-                    sqlite3_close(paibaDB);
-                    NSLog(@"数据库操作数据失败!");
-                }
 
                 [self backAction];
             }

@@ -9,7 +9,13 @@
 #import "MHImagePickerMutilSelector.h"
 #import <QuartzCore/QuartzCore.h>
 #import "constants.h"
-#import "constants.h"
+#import <AssetsLibrary/ALAsset.h>
+
+#import <AssetsLibrary/ALAssetsLibrary.h>
+
+#import <AssetsLibrary/ALAssetsGroup.h>
+
+#import <AssetsLibrary/ALAssetRepresentation.h>
 @interface MHImagePickerMutilSelector ()
 
 @end
@@ -25,6 +31,8 @@
     if (self) {
         // Custom initialization
         pics=[[NSMutableArray alloc] init];
+        infos=[[NSMutableArray alloc] init];
+
         //[pics addObject:@""];
         [self.view setBackgroundColor:[UIColor blackColor]];
         
@@ -80,7 +88,7 @@
         tbv.dataSource=self;
         tbv.delegate=self;
         
-        //[tbv setContentInset:UIEdgeInsetsMake(10, 0, 0, 0)];
+        [tbv setContentInset:UIEdgeInsetsMake(10, 0, 0, 0)];
         
         [tbv setBackgroundColor:[UIColor clearColor]];
         
@@ -91,15 +99,16 @@
         [viewController.view addSubview:selectedPan];
     }else{
         [pics removeAllObjects];
-        
+        [infos removeAllObjects];
+
         
     }
 }
 
 -(void)doneHandler
 {
-    if (delegate && [delegate respondsToSelector:@selector(imagePickerMutilSelectorDidGetImages:)]) {
-        [delegate performSelector:@selector(imagePickerMutilSelectorDidGetImages:) withObject:pics];
+    if (delegate && [delegate respondsToSelector:@selector(imagePickerMutilSelectorDidGetImages: GetInfos:)]) {
+        [delegate performSelector:@selector(imagePickerMutilSelectorDidGetImages: GetInfos:) withObject:pics withObject:infos];
     }
     [self close];
 }
@@ -154,6 +163,8 @@
 -(void)deletePicHandler:(UIButton*)btn
 {
     [pics removeObjectAtIndex:btn.tag];
+    [infos removeObjectAtIndex:btn.tag];
+
     [self updateTableView];
 }
 
@@ -172,16 +183,32 @@
     
 }
 
--(void)imagePickerController:(UIImagePickerController *)picker didFinishPickingImage:(UIImage *)image editingInfo:(NSDictionary *)editingInfo
+- (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
 {
-    //[btn_addCover.imageView setImage:image forState:UIControlStateNormal];
-    
-    //[picker dismissModalViewControllerAnimated:YES];
-    if (pics.count>=10) {
-        return;
-    }
-    
-    [pics addObject:image];
+    UIImage *photoimage=[[UIImage alloc]init];
+    if(picker.sourceType == UIImagePickerControllerSourceTypePhotoLibrary){
+        photoimage= [info objectForKey:UIImagePickerControllerOriginalImage];
+        
+        NSURL *assetURL = [info objectForKey:UIImagePickerControllerReferenceURL];
+        ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
+        [library assetForURL:assetURL
+                 resultBlock:^(ALAsset *asset) {
+                     NSDictionary* imageMetadata = [[NSMutableDictionary alloc] initWithDictionary:asset.defaultRepresentation.metadata];
+                     NSDictionary *GPSDict=[imageMetadata objectForKey:@"{GPS}"];
+                     NSLog(@"======GPSDict%@",GPSDict);
+
+                     NSLog(@"======%@",imageMetadata);
+                     if (pics.count>=10) {
+                         return;
+                     }
+                     
+                     [pics addObject:photoimage];
+                     [infos addObject:imageMetadata];
+                 }
+                failureBlock:^(NSError *error) { 
+                }];
+    } 
+
     [self updateTableView];
 }
 

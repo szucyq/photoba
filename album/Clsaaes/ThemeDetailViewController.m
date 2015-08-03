@@ -9,7 +9,11 @@
 #import "ThemeDetailViewController.h"
 #import "constants.h"
 #import "Html5ViewController.h"
-@interface ThemeDetailViewController ()
+@interface ThemeDetailViewController ()<UIScrollViewDelegate>{
+
+    UIScrollView *contentSV;
+
+}
 
 @end
 
@@ -52,6 +56,21 @@
     [backbutton setTitleColor:[UIColor grayColor] forState:UIControlStateHighlighted];
     [backbutton addTarget:self action:@selector(backAction) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:backbutton];
+    
+    contentSV = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 70, kWidth, kHeight)];
+    contentSV.bounces = YES;
+    contentSV.pagingEnabled = NO;
+    contentSV.delegate = self;
+    contentSV.userInteractionEnabled = YES;
+    contentSV.showsHorizontalScrollIndicator = NO;
+    contentSV.backgroundColor=[UIColor yellowColor];
+    [self.view addSubview:contentSV];
+    
+    
+    
+    [contentSV setContentSize:CGSizeMake(kWidth, kHeight-70)];
+    [contentSV setContentOffset:CGPointMake(0, 0)];
+
 }
 
 #pragma mark

@@ -7,8 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <BaiduMapAPI/BMapKit.h>
 
-@interface PhotoViewController : UIViewController
+@interface PhotoViewController : UIViewController<BMKGeneralDelegate,BMKGeoCodeSearchDelegate>
 
 -(IBAction)photodetailAction;
 

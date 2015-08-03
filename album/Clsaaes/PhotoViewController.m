@@ -13,7 +13,16 @@
 #import <MobileCoreServices/MobileCoreServices.h>
 #import "UIButton+Badge.h"
 #import "CustomAlertView.h"
+#import "MyTime.h"
+#import <sqlite3.h>
+#import <AssetsLibrary/ALAsset.h>
+#import <BaiduMapAPI/BMapKit.h>
 
+#import <AssetsLibrary/ALAssetsLibrary.h>
+
+#import <AssetsLibrary/ALAssetsGroup.h>
+
+#import <AssetsLibrary/ALAssetRepresentation.h>
 @class CustomAlertView;
 
 @interface PhotoViewController ()<MHImagePickerMutilSelectorDelegate,UIImagePickerControllerDelegate, UIActionSheetDelegate,UINavigationControllerDelegate,UIScrollViewDelegate>{
@@ -21,8 +30,18 @@
     CustomAlertView *alertView;
     NSMutableArray *imageArray;
     int currentindex;
+    int yearindex;
+    int nowyearindex;
+    NSString *databasePath;
+    sqlite3 *paibaDB;
 
-
+    UILabel *yearTextLabel;
+    UIButton* rightyearbutton;
+    NSString *addressStr;
+    
+    UIImage *currentimage;
+    NSDictionary *currentDic;
+    int currentimageindex;
 }
 @property (nonatomic, retain) UIImagePickerController *imagePickerController;
 
@@ -31,6 +50,9 @@
 @end
 
 @implementation PhotoViewController
+#pragma mark
+#pragma mark viewload
+
 -(void)viewWillAppear:(BOOL)animated{
     
     self.tabBarController.tabBar.hidden=NO;
@@ -61,22 +83,83 @@
     [photobutton addTarget:self action:@selector(photoAction:) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:photobutton];
     
-//    UIButton *addbutton=[[UIButton alloc]initWithFrame:CGRectMake(kWidth-40, 30, 29, 29)];
-//    [addbutton setImage:[UIImage imageNamed:@"icon-add"]  forState:UIControlStateNormal];
-//    [addbutton addTarget:self action:@selector(addAction:) forControlEvents:UIControlEventTouchUpInside];
-//    [self.view addSubview:addbutton];
+    yearTextLabel = [[UILabel alloc] initWithFrame: CGRectMake(0, kWidth/2-80, kWidth, 30)];
+    yearTextLabel.backgroundColor = [UIColor clearColor];
+    yearTextLabel.textColor=[UIColor blackColor];
+    yearTextLabel.textAlignment = NSTextAlignmentCenter;
+    yearTextLabel.font            = [UIFont systemFontOfSize:kTitleFont];
+    
+    NSDate * date = [NSDate date];
+    NSTimeInterval sec = [date timeIntervalSinceNow];
+    NSDate * currentDate = [[NSDate alloc] initWithTimeIntervalSinceNow:sec];
+    NSDateFormatter * df = [[NSDateFormatter alloc] init ];
+    [df setDateFormat:@"yyyy"];
+    NSString * yeartext = [df stringFromDate:currentDate];
+    int intString = [yeartext intValue];
+    nowyearindex=intString;
+    yearindex=intString;
+    [yearTextLabel setText:[yeartext stringByAppendingString:@"年"]];
+    [self.view addSubview:yearTextLabel];
 
-
-//    UIButton *editbutton=[[UIButton alloc]initWithFrame:CGRectMake(kWidth-40, 30, 29, 29)];
-//    [editbutton setImage:[UIImage imageNamed:@"icon-add"]  forState:UIControlStateNormal];
-//    [editbutton addTarget:self action:@selector(editAction:) forControlEvents:UIControlEventTouchUpInside];
-//    [self.view addSubview:editbutton];
     
     
+    UIButton* leftyearbutton=[[UIButton alloc]initWithFrame:CGRectMake( kWidth/2+80, 75, 60, 40)];
+    NSLog(@"kWidth is %f",kWidth);
+    NSLog(@"kHeight %f",kHeight);
+
+    leftyearbutton.titleLabel.font=[UIFont systemFontOfSize:25];
+//    [leftyearbutton setImage:[UIImage imageNamed:@"leftarrow"] forState:UIControlStateNormal];
+    [leftyearbutton setTitle:@"<" forState:UIControlStateNormal];
+    [leftyearbutton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+    [leftyearbutton setTitleColor:[UIColor grayColor] forState:UIControlStateHighlighted];
+    [leftyearbutton addTarget:self action:@selector(leftyearAction) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:leftyearbutton];
+
+    
+    rightyearbutton=[[UIButton alloc]initWithFrame:CGRectMake(kWidth-100, 75, 60, 40)];
+    rightyearbutton.hidden=YES;
+    rightyearbutton.titleLabel.font=[UIFont systemFontOfSize:25];
+//    [rightyearbutton setImage:[UIImage imageNamed:@"rightarrow"] forState:UIControlStateNormal];
+    [rightyearbutton setTitle:@">" forState:UIControlStateNormal];
+    [rightyearbutton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+    [rightyearbutton setTitleColor:[UIColor grayColor] forState:UIControlStateHighlighted];
+    [rightyearbutton addTarget:self action:@selector(rightyearAction) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:rightyearbutton];
 
  
 }
--(IBAction)photodetailAction{
+
+#pragma mark
+#pragma mark button click methode
+//查看上一年照片
+-(void)leftyearAction{
+    yearindex--;
+    if (yearindex==nowyearindex) {
+        rightyearbutton.hidden=YES;
+    }else{
+        rightyearbutton.hidden=NO;
+    }
+    [yearTextLabel setText:[NSString stringWithFormat:@"%d年",yearindex]];
+}
+
+//查看下一年照片
+-(void)rightyearAction{
+    
+    yearindex++;
+    if (yearindex==nowyearindex) {
+        rightyearbutton.hidden=YES;
+    }else{
+        rightyearbutton.hidden=NO;
+        
+    }
+
+    [yearTextLabel setText:[NSString stringWithFormat:@"%d年",yearindex]];
+
+    
+}
+
+//点击单张照片，查看照片详情
+-(void)photodetailAction{
 
     SinglePhotoViewController
     *nextview=[[SinglePhotoViewController alloc]init];
@@ -85,7 +168,7 @@
 
 }
 
-
+//点击拍照按钮
 -(void)photoAction:(UIButton*)sender{
     UIActionSheet *choiceSheet = [[UIActionSheet alloc] initWithTitle:nil
                                                              delegate:self
@@ -98,7 +181,7 @@
 }
 
 #pragma mark
-#pragma UIActionSheet Delegate
+#pragma mark UIActionSheet Delegate
 - (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
 {
     switch (buttonIndex) {
@@ -122,14 +205,6 @@
             [doneItem setTitle:@"取消"];
             
             [self presentViewController:self.imagePickerController animated:YES completion:nil];
-            
-            
-            //            UIImagePickerController *imagePicker = [[UIImagePickerController alloc] init];
-            //            imagePicker.delegate = self;
-            //            imagePicker.allowsEditing = YES;
-            //            imagePicker.sourceType = UIImagePickerControllerSourceTypeCamera;
-            //            //            [self presentModalViewController:imagePicker animated:YES];
-            //            [self.view.window.rootViewController presentViewController:imagePicker animated:YES completion:nil];
         }
             break;
         case 1://本地相簿
@@ -149,19 +224,15 @@
             imagePickerMutilSelector.imagePicker=picker;//使imagePickerMutilSelector得知其控制的UIImagePicker实例，为释放时需要。
             
             [self presentViewController:picker animated:YES completion:nil];
-            
-            //            UIImagePickerController *imagePicker = [[UIImagePickerController alloc] init];
-            //            imagePicker.delegate = self;
-            //            imagePicker.allowsEditing = YES;
-            //            imagePicker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
-            //            //            [self presentModalViewController:imagePicker animated:YES];
-            //            [self presentViewController:imagePicker animated:YES completion:nil];
         }
             break;
         default:
             break;
     }
 }
+
+#pragma mark
+#pragma mark 自定义照片拍摄
 //这里是主要函数
 - (void)setupImagePicker:(UIImagePickerControllerSourceType)sourceType
 {
@@ -230,22 +301,6 @@
         controlView = nil;
     }
 }
-#pragma mark -
-#pragma UIImagePickerController Delegate
-//- (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
-//{
-//    if ([[info objectForKey:UIImagePickerControllerMediaType] isEqualToString:(__bridge NSString *)kUTTypeImage]) {
-//        UIImage* image = [info objectForKey:@"UIImagePickerControllerOriginalImage"];
-//
-//    }
-//
-//}
-//
-//- (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker
-//{
-//    [picker dismissViewControllerAnimated:YES completion:nil];
-//}
-
 
 //拍照
 - (void)stillImage:(id)sender
@@ -258,6 +313,7 @@
 {
     [self imagePickerControllerDidCancel:self.imagePickerController];
 }
+
 - (void)changeCameraDevice:(id)sender
 {
     if (self.imagePickerController.cameraDevice == UIImagePickerControllerCameraDeviceRear) {
@@ -270,16 +326,11 @@
     }
 }
 
-- (IBAction)cancel:(id)sender
-{
-    [alertView dismissWithClickedButtonIndex:0 animated:YES];
-}
-
-
+#pragma mark
 #pragma mark - UIImagePickerController回调
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker
 {
-    [picker dismissModalViewControllerAnimated:YES];
+    [picker dismissViewControllerAnimated:YES completion:nil];
     
 }
 
@@ -287,20 +338,9 @@
 {
     
     if (currentindex==0) {
-        
-        //保存相片到数组，这种方法不可取,会占用过多内存
-        //如果是一张就无所谓了，到时候自己改
         [imageArray addObject:[info objectForKey:UIImagePickerControllerOriginalImage]];
-        //    if (singleMode) {
-        //        [picker dismissModalViewControllerAnimated:YES];
-        //        [self refreshImage];
-        //    }
-        //    else if (imageArray.count == 1) {
-        //多张拍摄,不必每次都执行
         UIBarButtonItem *flashItem = [[(UIToolbar *)self.imagePickerController.cameraOverlayView items] lastObject];
         flashItem.title = @"完成";
-        //    }
-        
         UIToolbar *view = (UIToolbar *)self.imagePickerController.cameraOverlayView;
         UIBarButtonItem *cameraItem = [[view items] objectAtIndex:3];
         [(UIButton *)cameraItem.customView setBadge:(int)imageArray.count];
@@ -313,7 +353,105 @@
     
 }
 
+#pragma mark
+#pragma mark 自定义从照片库多选照片
+-(void)imagePickerMutilSelectorDidGetImages:(NSArray*)imagesArray GetInfos:(NSArray *)infosArray
 
+//-(void)imagePickerMutilSelectorDidGetImages:(NSArray *)imagesArray get
+{
+    NSMutableArray*  importItems=[[NSMutableArray alloc] initWithArray:imagesArray copyItems:YES];
+    NSMutableArray*  infoItems=[[NSMutableArray alloc] initWithArray:infosArray copyItems:YES];
+
+    NSLog(@"importItems is %@",importItems);
+    NSLog(@"infoItems is %@",infoItems);
+
+
+    for (int i=0; i<importItems.count; i++) {
+        currentDic=[infoItems objectAtIndex:i  ];
+        currentimageindex=i;
+        NSData*mutimageData=UIImagePNGRepresentation([importItems objectAtIndex:i]);
+        currentimage = [UIImage imageWithData:mutimageData];
+        
+        //初始化地理编码类
+        //注意：必须初始化地理编码类
+        BMKGeoCodeSearch *_geoCodeSearch = [[BMKGeoCodeSearch alloc]init];
+        _geoCodeSearch.delegate = self;
+        //初始化逆地理编码类
+        BMKReverseGeoCodeOption *reverseGeoCodeOption= [[BMKReverseGeoCodeOption alloc] init];
+        //需要逆地理编码的坐标位置
+        
+        CLLocationCoordinate2D coor ;
+        coor.latitude=[[[currentDic objectForKey:@"{GPS}"] objectForKey:@"Latitude"] floatValue];
+        coor.longitude=[[[currentDic objectForKey:@"{GPS}"] objectForKey:@"Longitude"] floatValue];
+        reverseGeoCodeOption.reverseGeoPoint = coor;
+        [_geoCodeSearch reverseGeoCode:reverseGeoCodeOption];
+        
+//        NSLog(@"addressStr is %@",addressStr);
+        
+    }
+}
+- (void)onGetReverseGeoCodeResult:(BMKGeoCodeSearch *)searcher result:(BMKReverseGeoCodeResult *)result errorCode:(BMKSearchErrorCode)error
+{
+    //BMKReverseGeoCodeResult是编码的结果，包括地理位置，道路名称，uid，城市名等信息
+    addressStr=result.address;
+    
+    
+    
+    CGSize size = CGSizeMake([[currentDic objectForKey:@"PixelWidth"] floatValue], [[currentDic objectForKey:@"PixelHeight"] floatValue]); //设置上下文（画布）大小
+    UIGraphicsBeginImageContext(size); //创建一个基于位图的上下文(context)，并将其设置为当前上下文
+    CGContextRef contextRef = UIGraphicsGetCurrentContext(); //获取当前上下文
+    NSString *title = addressStr;  //需要添加的水印文字
+    NSLog(@"addressStr is %@",addressStr);
+    
+    CGContextTranslateCTM(contextRef, 0, size.height);  //画布的高度
+    CGContextScaleCTM(contextRef, 1.0, -1.0);  //画布翻转
+    CGContextDrawImage(contextRef, CGRectMake(0, 0, size.width, size.height), [currentimage CGImage]);  //在上下文种画当前图片
+    
+    [[UIColor redColor] set];  //上下文种的文字属性
+    CGContextTranslateCTM(contextRef, 0, size.height);
+    CGContextScaleCTM(contextRef, 1.0, -1.0);
+    
+    float multipleFloat=size.width/kWidth;
+    
+    UIFont *font = [UIFont boldSystemFontOfSize:16*multipleFloat];
+    [title drawInRect:CGRectMake(size.width-200*multipleFloat, size.height-100*multipleFloat, 200*multipleFloat, 80*multipleFloat) withFont:font];
+    UIImage *res =UIGraphicsGetImageFromCurrentImageContext();  //从当前上下文种获取图片
+    UIGraphicsEndImageContext(); //移除栈顶的基于当前位图的图形上下文。
+    NSString *timestr=[MyTime timenowStr];
+    
+    sqlite3_stmt *statement;
+    databasePath=[MyTime dbpathStr];
+    const char *dbpath = [databasePath UTF8String];
+    
+    
+    NSData *imageData = UIImagePNGRepresentation(res);
+    
+    NSString * DocumentsPath = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents/PhotoFile"];
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    [fileManager createDirectoryAtPath:DocumentsPath withIntermediateDirectories:YES attributes:nil error:nil];
+    NSString *imagenamestr=[NSString stringWithFormat:@"/%@%d.png",timestr,currentimageindex ];
+    [fileManager createFileAtPath:[DocumentsPath stringByAppendingString:imagenamestr] contents:imageData attributes:nil];
+    
+    if (sqlite3_open(dbpath, &paibaDB)==SQLITE_OK) {
+        //            NSString *insertSQL = [NSString stringWithFormat:@"INSERT INTO PHOTOS (name,time,address,longitude,latitude,type) VALUES(\"%@\",\"%@\",\"%@\")",imagenamestr,detailTF.text,tablenameStr,@"photo"];
+        //            NSLog(@"insertSQL is %@",insertSQL);
+        //            const char *insert_stmt = [insertSQL UTF8String];
+        //            sqlite3_prepare_v2(paibaDB, insert_stmt, -1, &statement, NULL);
+        //            if (sqlite3_step(statement)==SQLITE_DONE) {
+        //                [[NSNotificationCenter defaultCenter] postNotificationName:@"reloadthemelist"object:nil];
+        //
+        //            }
+        //            else
+        //            {
+        //            }
+    }
+    
+//    sqlite3_finalize(statement);
+//    sqlite3_close(paibaDB);
+
+
+    NSLog(@"result is %@",result.address);
+}
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
