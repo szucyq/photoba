@@ -17,7 +17,7 @@
 #import <RennSDK/RennSDK.h>
 #import <GoogleOpenSource/GoogleOpenSource.h>
 #import <GooglePlus/GooglePlus.h>
-
+#import "UIWebView+ToFile.h"
 
 @interface Html5ViewController ()
 @property (nonatomic,retain)NSMutableArray *picArr;
@@ -156,5 +156,16 @@
     
     NSLog(@"html:%@",html);
     [self.contentWebView loadHTMLString:html baseURL:[NSURL fileURLWithPath:[[NSBundle mainBundle] resourcePath]]];
+}
+- (void)generateImage{
+    UIImage *image = [self.contentWebView imageRepresentation];
+    NSData *imageData = UIImagePNGRepresentation(image);
+    NSString *documentPath = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES)[0];
+    NSString *imagePath = [documentPath stringByAppendingPathComponent:@"temp.png"];
+    NSLog(@"image:%@",imagePath);
+    BOOL result = [imageData writeToFile:imagePath atomically:YES];
+    if (result) {
+        NSLog(@"成功生成图片");
+    }
 }
 @end

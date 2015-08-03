@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		32B7175F1B6AFB5D004481C0 /* Photo.m in Sources */ = {isa = PBXBuildFile; fileRef = 32B7175E1B6AFB5D004481C0 /* Photo.m */; };
 		32B717611B6AFCD1004481C0 /* share.css in Resources */ = {isa = PBXBuildFile; fileRef = 32B717601B6AFCD1004481C0 /* share.css */; };
+		32C18A501B6EEFE000EA4175 /* UIWebView+ToFile.m in Sources */ = {isa = PBXBuildFile; fileRef = 32C18A4F1B6EEFE000EA4175 /* UIWebView+ToFile.m */; };
 		D00A8BA81B56AEAE0017F5F1 /* HelpViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D00A8BA61B56AEAE0017F5F1 /* HelpViewController.m */; };
 		D00A8BA91B56AEAE0017F5F1 /* HelpViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = D00A8BA71B56AEAE0017F5F1 /* HelpViewController.xib */; };
 		D00A8BAD1B56AEC90017F5F1 /* SettingDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D00A8BAB1B56AEC90017F5F1 /* SettingDetailViewController.m */; };
@@ -112,6 +113,8 @@
 		32B7175D1B6AFB5D004481C0 /* Photo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Photo.h; sourceTree = "<group>"; };
 		32B7175E1B6AFB5D004481C0 /* Photo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Photo.m; sourceTree = "<group>"; };
 		32B717601B6AFCD1004481C0 /* share.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = share.css; sourceTree = "<group>"; };
+		32C18A4E1B6EEFE000EA4175 /* UIWebView+ToFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIWebView+ToFile.h"; sourceTree = "<group>"; };
+		32C18A4F1B6EEFE000EA4175 /* UIWebView+ToFile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIWebView+ToFile.m"; sourceTree = "<group>"; };
 		32F988831B5F823E001CBD4F /* constants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = constants.h; sourceTree = "<group>"; };
 		D00A8BA51B56AEAE0017F5F1 /* HelpViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HelpViewController.h; path = Clsaaes/HelpViewController.h; sourceTree = "<group>"; };
 		D00A8BA61B56AEAE0017F5F1 /* HelpViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = HelpViewController.m; path = Clsaaes/HelpViewController.m; sourceTree = "<group>"; };
@@ -479,6 +482,8 @@
 				D00A8C481B57462E0017F5F1 /* Html5ViewController.h */,
 				D00A8C491B57462E0017F5F1 /* Html5ViewController.m */,
 				D00A8C4A1B57462E0017F5F1 /* Html5ViewController.xib */,
+				32C18A4E1B6EEFE000EA4175 /* UIWebView+ToFile.h */,
+				32C18A4F1B6EEFE000EA4175 /* UIWebView+ToFile.m */,
 				D054D1F71B56517400C74490 /* JourneyViewController.h */,
 				D054D1F81B56517400C74490 /* JourneyViewController.m */,
 				D054D1F91B56517400C74490 /* JourneyViewController.xib */,
@@ -673,6 +678,7 @@
 			files = (
 				D00A8BAD1B56AEC90017F5F1 /* SettingDetailViewController.m in Sources */,
 				D00A8C331B57383F0017F5F1 /* MHImagePickerMutilSelector.m in Sources */,
+				32C18A501B6EEFE000EA4175 /* UIWebView+ToFile.m in Sources */,
 				D054D1F01B56515000C74490 /* PhotoViewController.m in Sources */,
 				32B7175F1B6AFB5D004481C0 /* Photo.m in Sources */,
 				D00A8C3C1B573ED80017F5F1 /* ThemeDetailViewController.m in Sources */,
