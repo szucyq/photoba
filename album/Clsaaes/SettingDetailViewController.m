@@ -30,7 +30,7 @@
     titleText.textColor=[UIColor whiteColor];
     titleText.textAlignment = NSTextAlignmentCenter;
     titleText.font            = [UIFont systemFontOfSize:kNavTitleFont];
-    [titleText setText:@"功能介绍"];
+    [titleText setText:@"系统设置"];
     [self.view addSubview:titleText];
     
     

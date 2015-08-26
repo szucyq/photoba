@@ -118,12 +118,13 @@ BMKMapManager* _mapManager;
         sqlite3_close(paibaDB);
         NSLog(@"数据库打开失败");
     }
-    NSString *sqlCreateTable1 = @"CREATE TABLE IF NOT EXISTS PHOTOS ( name TEXT, time TEXT, address TEXT,longitude TEXT,latitude TEXT,type TEXT)";
-    NSString *sqlCreateTable2 = @"CREATE TABLE IF NOT EXISTS THEMES ( name TEXT, detail TEXT, tablename TEXT)";
-    NSString *sqlCreateTable3 = @"CREATE TABLE IF NOT EXISTS JOURNEYS (name TEXT, detail TEXT)";
+    NSString *sqlCreateTable1 = @"CREATE TABLE IF NOT EXISTS PHOTOS ( name TEXT, detail TEXT,time TEXT, year TEXT,month TEXT,address TEXT,longitude TEXT,latitude TEXT,type TEXT)";
+    NSString *sqlCreateTable2 = @"CREATE TABLE IF NOT EXISTS THEMES ( name TEXT, detail TEXT, postername TEXT)";
+    NSString *sqlCreateTable3 = @"CREATE TABLE IF NOT EXISTS JOURNEYS (name TEXT, detail TEXT, postername TEXT)";
     
-    NSString *sqlCreateTable4 = @"CREATE TABLE IF NOT EXISTS THEMEPHOTOS ( name TEXT, time TEXT, address TEXT,longitude TEXT,latitude TEXT,type TEXT,detail TEXT)";
-    NSString *sqlCreateTable5 = @"CREATE TABLE IF NOT EXISTS JOURNEYPHOTOS ( name TEXT, time TEXT, address TEXT,longitude TEXT,latitude TEXT,type TEXT,detail TEXT)";
+    NSString *sqlCreateTable4 = @"CREATE TABLE IF NOT EXISTS THEMEPHOTOS ( name TEXT, detail TEXT,time TEXT, year TEXT,month TEXT,address TEXT,longitude TEXT,latitude TEXT,type TEXT)";
+
+    NSString *sqlCreateTable5 = @"CREATE TABLE IF NOT EXISTS JOURNEYPHOTOS ( name TEXT,detail TEXT, time TEXT, year TEXT,month TEXT,address TEXT,longitude TEXT,latitude TEXT,type TEXT)";
 
     [self execSql:sqlCreateTable1];
     [self execSql:sqlCreateTable2];

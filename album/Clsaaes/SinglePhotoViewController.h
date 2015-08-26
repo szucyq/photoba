@@ -8,6 +8,12 @@
 
 #import <UIKit/UIKit.h>
 
-@interface SinglePhotoViewController : UIViewController
+@interface SinglePhotoViewController : UIViewController{
 
+    NSMutableArray *imagearray;
+    int currentimageIndex;
+
+}
+@property(nonatomic,assign)int currentimageIndex;
+@property (nonatomic,strong)NSMutableArray *imagearray;
 @end

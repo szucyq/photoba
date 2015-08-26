@@ -10,4 +10,7 @@
 
 @interface AddThemeViewController : UIViewController
 
+@property(nonatomic,strong)NSDictionary *editDic;
+@property (nonatomic,assign)BOOL  isEdit;
+
 @end

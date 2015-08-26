@@ -195,9 +195,6 @@
                  resultBlock:^(ALAsset *asset) {
                      NSDictionary* imageMetadata = [[NSMutableDictionary alloc] initWithDictionary:asset.defaultRepresentation.metadata];
                      NSDictionary *GPSDict=[imageMetadata objectForKey:@"{GPS}"];
-                     NSLog(@"======GPSDict%@",GPSDict);
-
-                     NSLog(@"======%@",imageMetadata);
                      if (pics.count>=10) {
                          return;
                      }

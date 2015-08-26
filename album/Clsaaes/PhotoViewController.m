@@ -29,6 +29,8 @@
 
     CustomAlertView *alertView;
     NSMutableArray *imageArray;
+    NSMutableArray *dataArray;
+
     int currentindex;
     int yearindex;
     int nowyearindex;
@@ -42,6 +44,12 @@
     UIImage *currentimage;
     NSDictionary *currentDic;
     int currentimageindex;
+    
+    UIScrollView *contentSV;
+    
+    NSMutableArray *takephotoArray;
+    NSMutableArray *takephotoindoArray;
+
 }
 @property (nonatomic, retain) UIImagePickerController *imagePickerController;
 
@@ -63,7 +71,8 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     imageArray=[[NSMutableArray alloc]init];
-
+    takephotoArray=[[NSMutableArray alloc]init];
+    takephotoindoArray=[[NSMutableArray alloc]init];
     self.view.backgroundColor=RGB(255, 255, 255, 1);
     
     UIImageView *navigationbarimg=[[UIImageView alloc]initWithFrame:CGRectMake(0, 0, kWidth,kNavHeight)];
@@ -83,7 +92,7 @@
     [photobutton addTarget:self action:@selector(photoAction:) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:photobutton];
     
-    yearTextLabel = [[UILabel alloc] initWithFrame: CGRectMake(0, kWidth/2-80, kWidth, 30)];
+    yearTextLabel = [[UILabel alloc] initWithFrame: CGRectMake(0, 80, kWidth, 30)];
     yearTextLabel.backgroundColor = [UIColor clearColor];
     yearTextLabel.textColor=[UIColor blackColor];
     yearTextLabel.textAlignment = NSTextAlignmentCenter;
@@ -103,12 +112,8 @@
 
     
     
-    UIButton* leftyearbutton=[[UIButton alloc]initWithFrame:CGRectMake( kWidth/2+80, 75, 60, 40)];
-    NSLog(@"kWidth is %f",kWidth);
-    NSLog(@"kHeight %f",kHeight);
-
+    UIButton* leftyearbutton=[[UIButton alloc]initWithFrame:CGRectMake( kWidth/2-80, 75, 60, 40)];
     leftyearbutton.titleLabel.font=[UIFont systemFontOfSize:25];
-//    [leftyearbutton setImage:[UIImage imageNamed:@"leftarrow"] forState:UIControlStateNormal];
     [leftyearbutton setTitle:@"<" forState:UIControlStateNormal];
     [leftyearbutton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
     [leftyearbutton setTitleColor:[UIColor grayColor] forState:UIControlStateHighlighted];
@@ -116,10 +121,9 @@
     [self.view addSubview:leftyearbutton];
 
     
-    rightyearbutton=[[UIButton alloc]initWithFrame:CGRectMake(kWidth-100, 75, 60, 40)];
+    rightyearbutton=[[UIButton alloc]initWithFrame:CGRectMake( kWidth/2+80, 75, 60, 40)];
     rightyearbutton.hidden=YES;
     rightyearbutton.titleLabel.font=[UIFont systemFontOfSize:25];
-//    [rightyearbutton setImage:[UIImage imageNamed:@"rightarrow"] forState:UIControlStateNormal];
     [rightyearbutton setTitle:@">" forState:UIControlStateNormal];
     [rightyearbutton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
     [rightyearbutton setTitleColor:[UIColor grayColor] forState:UIControlStateHighlighted];
@@ -127,10 +131,118 @@
     [self.view addSubview:rightyearbutton];
 
  
+    
+    [self getdata:[NSString stringWithFormat:@"%d",yearindex]];
+
+    
+}
+
+-(void)reloadscrollerview{
+    if (contentSV.superclass) {
+        [contentSV removeFromSuperview];
+    }
+    contentSV = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 120, kWidth, kHeight-170)];
+    contentSV.bounces = YES;
+    contentSV.pagingEnabled = NO;
+    contentSV.delegate = self;
+    contentSV.userInteractionEnabled = YES;
+    contentSV.showsHorizontalScrollIndicator = NO;
+    contentSV.backgroundColor=[UIColor clearColor];
+    [self.view addSubview:contentSV];
+    
+    
+    float  imagewidth=(kWidth-2*3)/4;
+    for (int i=0; i<dataArray.count; i++) {
+        NSDictionary *imagerecord=[dataArray objectAtIndex:i];
+        
+        NSString * DocumentsPath = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents/PhotoFile"];
+        NSString *imagepathstr=[NSString stringWithFormat:@"%@/%@",DocumentsPath,[imagerecord objectForKey:@"name"] ];
+
+        UIImage *image=[UIImage imageWithContentsOfFile:imagepathstr];
+        
+        UIImageView *imageView = [[UIImageView alloc]initWithFrame:CGRectMake(i%4*(imagewidth+2),i/4*(imagewidth+2), imagewidth, imagewidth)];
+        imageView.userInteractionEnabled = YES;
+        imageView.contentMode = UIViewContentModeScaleToFill;
+        [imageView setImage:image];
+        [contentSV addSubview:imageView];
+        
+        UIButton *showButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        showButton.frame = CGRectMake(0, 0, imagewidth, imagewidth);
+        [showButton addTarget:self action:@selector(showButtonAction:) forControlEvents:UIControlEventTouchUpInside];
+        showButton.tag = 1000+i;
+        [imageView addSubview:showButton];
+        showButton=nil;
+        imageView=nil;
+
+    }
+
+    
+    [contentSV setContentSize:CGSizeMake(kWidth, kHeight-170)];
+    [contentSV setContentOffset:CGPointMake(0, 0)];
+
+
+}
+#pragma mark
+#pragma mark get data from sqlite
+
+-(void)getdata:(NSString *)yearstr{
+    dataArray=[[NSMutableArray alloc]init];
+    sqlite3_stmt *statement;
+    
+    databasePath=[MyTime dbpathStr];
+    const char *dbpath = [databasePath UTF8String];
+    
+    if (sqlite3_open(dbpath, &paibaDB) == SQLITE_OK)
+    {
+        NSString *querySQL = [NSString stringWithFormat:@"SELECT name , detail,time , year ,month ,address ,longitude ,latitude ,type  from PHOTOS where year=\"%@\"",yearstr];
+        const char *query_stmt = [querySQL UTF8String];
+        if (sqlite3_prepare_v2(paibaDB, query_stmt, -1, &statement, NULL) == SQLITE_OK)
+        {
+            while (sqlite3_step(statement) == SQLITE_ROW)
+            {
+                NSString *namestr = [[NSString alloc] initWithUTF8String:(const char *)sqlite3_column_text(statement, 0)];
+                NSString *detailstr = [[NSString alloc] initWithUTF8String:(const char *)sqlite3_column_text(statement, 1)];
+
+                NSString *timestr = [[NSString alloc] initWithUTF8String:(const char *)sqlite3_column_text(statement, 2    )];
+                
+                NSString *yearstr = [[NSString alloc] initWithUTF8String:(const char *)sqlite3_column_text(statement, 3    )];
+                NSString *monthstr = [[NSString alloc] initWithUTF8String:(const char *)sqlite3_column_text(statement, 4    )];
+                NSString *addressstr = [[NSString alloc] initWithUTF8String:(const char *)sqlite3_column_text(statement, 5    )];
+                NSString *longitudestr = [[NSString alloc] initWithUTF8String:(const char *)sqlite3_column_text(statement, 6    )];
+                NSString *latitudestr = [[NSString alloc] initWithUTF8String:(const char *)sqlite3_column_text(statement, 7    )];
+                NSString *typestr = [[NSString alloc] initWithUTF8String:(const char *)sqlite3_column_text(statement, 8    )];
+
+                NSDictionary *record=[[NSDictionary alloc]initWithObjectsAndKeys:namestr,@"name",detailstr,@"detail",timestr,@"time",yearstr,@"year",monthstr,@"month",addressstr,@"address",longitudestr,@"longitude",latitudestr,@"latitude",typestr,@"type", nil];
+                [dataArray addObject:record];
+            }
+            sqlite3_finalize(statement);
+        }
+        
+        sqlite3_close(paibaDB);
+    }
+    NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"time" ascending:YES];
+    NSArray *tempsArray = [dataArray sortedArrayUsingDescriptors:[NSArray arrayWithObject:sortDescriptor]];
+    NSArray* reversedArray = [[tempsArray reverseObjectEnumerator] allObjects];
+    NSLog(@"reversedArray is %@",reversedArray);
+
+//    [allArray addObjectsFromArray:reversedArray];
+
+    [self reloadscrollerview];
 }
 
 #pragma mark
 #pragma mark button click methode
+
+-(void)showButtonAction:(UIButton*)sender{
+    
+    SinglePhotoViewController
+    *nextview=[[SinglePhotoViewController alloc]init];
+    nextview.currentimageIndex=(int)sender.tag-1000;
+    nextview.imagearray=dataArray;
+    [self.navigationController pushViewController:nextview animated:YES];
+
+
+}
 //查看上一年照片
 -(void)leftyearAction{
     yearindex--;
@@ -140,6 +252,8 @@
         rightyearbutton.hidden=NO;
     }
     [yearTextLabel setText:[NSString stringWithFormat:@"%d年",yearindex]];
+    
+    [self getdata:[NSString stringWithFormat:@"%d",yearindex]];
 }
 
 //查看下一年照片
@@ -154,6 +268,8 @@
     }
 
     [yearTextLabel setText:[NSString stringWithFormat:@"%d年",yearindex]];
+    
+    [self getdata:[NSString stringWithFormat:@"%d",yearindex]];
 
     
 }
@@ -161,9 +277,6 @@
 //点击单张照片，查看照片详情
 -(void)photodetailAction{
 
-    SinglePhotoViewController
-    *nextview=[[SinglePhotoViewController alloc]init];
-    [self.navigationController pushViewController:nextview animated:YES];
 
 
 }
@@ -312,6 +425,8 @@
 - (void)doneAction
 {
     [self imagePickerControllerDidCancel:self.imagePickerController];
+    
+    
 }
 
 - (void)changeCameraDevice:(id)sender
@@ -339,11 +454,22 @@
     
     if (currentindex==0) {
         [imageArray addObject:[info objectForKey:UIImagePickerControllerOriginalImage]];
+        
+//        [imageArray addObject:info];
+
+        
+        
+        
         UIBarButtonItem *flashItem = [[(UIToolbar *)self.imagePickerController.cameraOverlayView items] lastObject];
         flashItem.title = @"完成";
         UIToolbar *view = (UIToolbar *)self.imagePickerController.cameraOverlayView;
         UIBarButtonItem *cameraItem = [[view items] objectAtIndex:3];
         [(UIButton *)cameraItem.customView setBadge:(int)imageArray.count];
+        
+        
+        
+        
+        
     }
     else if (currentindex==1){
         [picker dismissViewControllerAnimated:YES completion:nil];
@@ -356,37 +482,68 @@
 #pragma mark
 #pragma mark 自定义从照片库多选照片
 -(void)imagePickerMutilSelectorDidGetImages:(NSArray*)imagesArray GetInfos:(NSArray *)infosArray
-
-//-(void)imagePickerMutilSelectorDidGetImages:(NSArray *)imagesArray get
 {
     NSMutableArray*  importItems=[[NSMutableArray alloc] initWithArray:imagesArray copyItems:YES];
     NSMutableArray*  infoItems=[[NSMutableArray alloc] initWithArray:infosArray copyItems:YES];
-
-    NSLog(@"importItems is %@",importItems);
-    NSLog(@"infoItems is %@",infoItems);
-
-
     for (int i=0; i<importItems.count; i++) {
         currentDic=[infoItems objectAtIndex:i  ];
         currentimageindex=i;
         NSData*mutimageData=UIImagePNGRepresentation([importItems objectAtIndex:i]);
         currentimage = [UIImage imageWithData:mutimageData];
         
-        //初始化地理编码类
-        //注意：必须初始化地理编码类
-        BMKGeoCodeSearch *_geoCodeSearch = [[BMKGeoCodeSearch alloc]init];
-        _geoCodeSearch.delegate = self;
-        //初始化逆地理编码类
-        BMKReverseGeoCodeOption *reverseGeoCodeOption= [[BMKReverseGeoCodeOption alloc] init];
-        //需要逆地理编码的坐标位置
         
-        CLLocationCoordinate2D coor ;
-        coor.latitude=[[[currentDic objectForKey:@"{GPS}"] objectForKey:@"Latitude"] floatValue];
-        coor.longitude=[[[currentDic objectForKey:@"{GPS}"] objectForKey:@"Longitude"] floatValue];
-        reverseGeoCodeOption.reverseGeoPoint = coor;
-        [_geoCodeSearch reverseGeoCode:reverseGeoCodeOption];
+        if ([currentDic objectForKey:@"{GPS}"]==nil) {
+            sqlite3_stmt *statement;
+            databasePath=[MyTime dbpathStr];
+            const char *dbpath = [databasePath UTF8String];
+            
+            NSString *dateStr=[NSString stringWithFormat:@"%@",[[currentDic objectForKey:@"{Exif}"] objectForKey:@"DateTimeOriginal"]];
+            NSString *yearstr=[dateStr substringToIndex:4];
+            NSString *monthstr=[dateStr substringWithRange:NSMakeRange(5, 2)];
+            NSString *timestr=[MyTime timenowStr];
+
+            
+            NSString * DocumentsPath = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents/PhotoFile"];
+            NSFileManager *fileManager = [NSFileManager defaultManager];
+            [fileManager createDirectoryAtPath:DocumentsPath withIntermediateDirectories:YES attributes:nil error:nil];
+            NSString *imagenamestr=[NSString stringWithFormat:@"/%@%d.png",timestr,currentimageindex ];
+            [fileManager createFileAtPath:[DocumentsPath stringByAppendingString:imagenamestr] contents:mutimageData attributes:nil];
+            
+            if (sqlite3_open(dbpath, &paibaDB)==SQLITE_OK) {
+                NSString *longitudeStr=[NSString stringWithFormat:@"%@",[[currentDic objectForKey:@"{GPS}"] objectForKey:@"Longitude"] ];
+                NSString *latitudeStr=[NSString stringWithFormat:@"%@",[[currentDic objectForKey:@"{GPS}"] objectForKey:@"Latitude"] ];
+                NSString *nameStr=[NSString stringWithFormat:@"%@%d.png",timestr,currentimageindex ];
+                
+                NSString *insertSQL = [NSString stringWithFormat:@"INSERT INTO PHOTOS (name,time,year,month,address,longitude,latitude,type,detail) VALUES(\"%@\",\"%@\",\"%@\",\"%@\",\"%@\",\"%@\",\"%@\",\"%@\",\"%@\")",nameStr,dateStr,yearstr,monthstr,addressStr,longitudeStr,latitudeStr,@"photo",@""];
+                const char *insert_stmt = [insertSQL UTF8String];
+                sqlite3_prepare_v2(paibaDB, insert_stmt, -1, &statement, NULL);
+                if (sqlite3_step(statement)==SQLITE_DONE) {
+                    NSLog(@"添加成功");
+                    
+                }
+                else
+                {
+                    NSLog(@"添加失败");
+                    
+                }
+            }
+            
+            sqlite3_finalize(statement);
+            sqlite3_close(paibaDB);
+            [self getdata:[NSString stringWithFormat:@"%d",yearindex]];
+
+            
+        }else{
+            BMKGeoCodeSearch *_geoCodeSearch = [[BMKGeoCodeSearch alloc]init];
+            _geoCodeSearch.delegate = self;
+            BMKReverseGeoCodeOption *reverseGeoCodeOption= [[BMKReverseGeoCodeOption alloc] init];
+            CLLocationCoordinate2D coor ;
+            coor.latitude=[[[currentDic objectForKey:@"{GPS}"] objectForKey:@"Latitude"] floatValue];
+            coor.longitude=[[[currentDic objectForKey:@"{GPS}"] objectForKey:@"Longitude"] floatValue];
+            reverseGeoCodeOption.reverseGeoPoint = coor;
+            [_geoCodeSearch reverseGeoCode:reverseGeoCodeOption];
         
-//        NSLog(@"addressStr is %@",addressStr);
+        }
         
     }
 }
@@ -394,14 +551,14 @@
 {
     //BMKReverseGeoCodeResult是编码的结果，包括地理位置，道路名称，uid，城市名等信息
     addressStr=result.address;
-    
-    
+    NSString *dateStr=[NSString stringWithFormat:@"%@",[[currentDic objectForKey:@"{Exif}"] objectForKey:@"DateTimeOriginal"]];
+    NSString *yearstr=[dateStr substringToIndex:4];
+    NSString *monthstr=[dateStr substringWithRange:NSMakeRange(5, 2)];
     
     CGSize size = CGSizeMake([[currentDic objectForKey:@"PixelWidth"] floatValue], [[currentDic objectForKey:@"PixelHeight"] floatValue]); //设置上下文（画布）大小
     UIGraphicsBeginImageContext(size); //创建一个基于位图的上下文(context)，并将其设置为当前上下文
     CGContextRef contextRef = UIGraphicsGetCurrentContext(); //获取当前上下文
-    NSString *title = addressStr;  //需要添加的水印文字
-    NSLog(@"addressStr is %@",addressStr);
+    NSString *title =[NSString stringWithFormat:@"%@\n%@",addressStr,dateStr];  //需要添加的水印文字
     
     CGContextTranslateCTM(contextRef, 0, size.height);  //画布的高度
     CGContextScaleCTM(contextRef, 1.0, -1.0);  //画布翻转
@@ -433,24 +590,29 @@
     [fileManager createFileAtPath:[DocumentsPath stringByAppendingString:imagenamestr] contents:imageData attributes:nil];
     
     if (sqlite3_open(dbpath, &paibaDB)==SQLITE_OK) {
-        //            NSString *insertSQL = [NSString stringWithFormat:@"INSERT INTO PHOTOS (name,time,address,longitude,latitude,type) VALUES(\"%@\",\"%@\",\"%@\")",imagenamestr,detailTF.text,tablenameStr,@"photo"];
-        //            NSLog(@"insertSQL is %@",insertSQL);
-        //            const char *insert_stmt = [insertSQL UTF8String];
-        //            sqlite3_prepare_v2(paibaDB, insert_stmt, -1, &statement, NULL);
-        //            if (sqlite3_step(statement)==SQLITE_DONE) {
-        //                [[NSNotificationCenter defaultCenter] postNotificationName:@"reloadthemelist"object:nil];
-        //
-        //            }
-        //            else
-        //            {
-        //            }
+        NSString *longitudeStr=[NSString stringWithFormat:@"%@",[[currentDic objectForKey:@"{GPS}"] objectForKey:@"Longitude"] ];
+        NSString *latitudeStr=[NSString stringWithFormat:@"%@",[[currentDic objectForKey:@"{GPS}"] objectForKey:@"Latitude"] ];
+        NSString *nameStr=[NSString stringWithFormat:@"%@%d.png",timestr,currentimageindex ];
+
+                    NSString *insertSQL = [NSString stringWithFormat:@"INSERT INTO PHOTOS (name,time,year,month,address,longitude,latitude,type,detail) VALUES(\"%@\",\"%@\",\"%@\",\"%@\",\"%@\",\"%@\",\"%@\",\"%@\",\"%@\")",nameStr,dateStr,yearstr,monthstr,addressStr,longitudeStr,latitudeStr,@"photo",@""];
+                    const char *insert_stmt = [insertSQL UTF8String];
+                    sqlite3_prepare_v2(paibaDB, insert_stmt, -1, &statement, NULL);
+                    if (sqlite3_step(statement)==SQLITE_DONE) {
+                        NSLog(@"添加成功");
+        
+                    }
+                    else
+                    {
+                        NSLog(@"添加失败");
+
+                    }
     }
     
-//    sqlite3_finalize(statement);
-//    sqlite3_close(paibaDB);
+    sqlite3_finalize(statement);
+    sqlite3_close(paibaDB);
 
+    [self getdata:[NSString stringWithFormat:@"%d",yearindex]];
 
-    NSLog(@"result is %@",result.address);
 }
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];

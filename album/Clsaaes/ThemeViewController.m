@@ -32,6 +32,8 @@
     UITextField*    detailTF;
     NSString *databasePath;
     sqlite3 *paibaDB;
+    
+    int  selectedIndex;
 
 }
 
@@ -86,8 +88,8 @@
     listTV=[[UITableView alloc]initWithFrame:CGRectMake(0, 70, kWidth,kHeight-120) style:UITableViewStylePlain];
     listTV.delegate  =self;
     listTV.dataSource=self;
-    listTV.backgroundColor = RGB(255, 255, 255, 1);
-    listTV.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
+    listTV.backgroundColor = RGB(238, 238, 238, 1);
+    listTV.separatorStyle = UITableViewCellSeparatorStyleNone;
     listTV.showsVerticalScrollIndicator=NO;
     [self.view addSubview:listTV];
 
@@ -111,7 +113,7 @@
 
     if (sqlite3_open(dbpath, &paibaDB) == SQLITE_OK)
     {
-        NSString *querySQL = [NSString stringWithFormat:@"SELECT name,detail,tablename from THEMES"];
+        NSString *querySQL = [NSString stringWithFormat:@"SELECT name,detail,postername from THEMES"];
         const char *query_stmt = [querySQL UTF8String];
         if (sqlite3_prepare_v2(paibaDB, query_stmt, -1, &statement, NULL) == SQLITE_OK)
         {
@@ -122,9 +124,9 @@
                 
                 NSString *detailstr = [[NSString alloc] initWithUTF8String:(const char *)sqlite3_column_text(statement, 1    )];
                 
-                NSString *tablenamestr = [[NSString alloc] initWithUTF8String:(const char *)sqlite3_column_text(statement, 2    )];
+                NSString *posternamestr = [[NSString alloc] initWithUTF8String:(const char *)sqlite3_column_text(statement, 2    )];
                 
-                NSDictionary *record=[[NSDictionary alloc]initWithObjectsAndKeys:namestr,@"name",detailstr,@"detail",tablenamestr,@"tablename", nil];
+                NSDictionary *record=[[NSDictionary alloc]initWithObjectsAndKeys:namestr,@"name",detailstr,@"detail",posternamestr,@"postername", nil];
                 [themeArray addObject:record];
 
             }
@@ -132,8 +134,8 @@
         }
         
         sqlite3_close(paibaDB);
+        
     }
-    NSLog(@"themeArray is %@",themeArray);
     [listTV reloadData];
 }
 
@@ -333,7 +335,6 @@
 -(void)imagePickerMutilSelectorDidGetImages:(NSArray *)imagesArray
 {
     NSMutableArray*  importItems=[[NSMutableArray alloc] initWithArray:imagesArray copyItems:YES];
-    NSLog(@"importItems is %@",importItems);
     
     NSString *timestr=[MyTime timenowStr];
     
@@ -362,7 +363,7 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return 80;
+    return 100;
 }
 
 -(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath{
@@ -372,17 +373,27 @@
         cell.selectionStyle = UITableViewCellSelectionStyleDefault;
         cell.backgroundColor=[UIColor clearColor];
     }
-    UIView *bgView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, kWidth, 80)];
+    UIView *bgView = [[UIView alloc]initWithFrame:CGRectMake(5, 5, kWidth-10, 90)];
     [bgView setBackgroundColor:[UIColor whiteColor]];
     [cell addSubview:bgView];
     
     NSDictionary *record=[themeArray objectAtIndex:indexPath.row];
     
-    UIImageView *iconImageView = [[UIImageView alloc]initWithFrame:CGRectMake(10, 15, 80, 50)];
-    [iconImageView setImage:[UIImage imageNamed:@"Chatroom-Bg"]];
+    UIImageView *iconImageView = [[UIImageView alloc]initWithFrame:CGRectMake(5, 5, 100, 80)];
+    NSString * DocumentsPath = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents"];
+    NSString *imagepathstr=[NSString stringWithFormat:@"%@/%@",DocumentsPath,[record objectForKey:@"postername"] ];
+    NSLog(@"[record objectForKey:postername] is %@",[record objectForKey:@"postername"]);
+    if ([[record objectForKey:@"postername"] isEqualToString:@""]) {
+       
+        [iconImageView setImage:[UIImage imageNamed:@"默认"]];
+
+    }else{
+        UIImage *posterimage=[UIImage imageWithContentsOfFile:imagepathstr];
+        [iconImageView setImage:posterimage];
+    }
     [bgView addSubview:iconImageView];
     
-    UILabel *nameLabel = [[UILabel alloc]initWithFrame:CGRectMake(100, 10, kWidth-110, 25)];
+    UILabel *nameLabel = [[UILabel alloc]initWithFrame:CGRectMake(120, 10, kWidth-130, 30)];
     nameLabel.font = [UIFont systemFontOfSize:16];
     nameLabel.textColor = RGB(60, 60, 60,1);
     nameLabel.textAlignment = NSTextAlignmentLeft;
@@ -390,7 +401,7 @@
     [nameLabel setText:[record objectForKey:@"name" ]];
     [bgView addSubview:nameLabel];
     
-    UILabel *detailLabel = [[UILabel alloc]initWithFrame:CGRectMake(100, 30, kWidth-110, 30)];
+    UILabel *detailLabel = [[UILabel alloc]initWithFrame:CGRectMake(120, 40, kWidth-130, 50)];
     detailLabel.font = [UIFont systemFontOfSize:14];
     detailLabel.textColor = RGB(150, 150, 150,1);
     detailLabel.textAlignment = NSTextAlignmentLeft;
@@ -408,6 +419,72 @@
     [self.navigationController pushViewController:nextview animated:YES];
     
 }
+
+#pragma mark 设置可以进行编辑
+- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return YES;
+}
+#pragma mark 设置编辑的样式
+- (UITableViewCellEditingStyle)tableView:(UITableView *)tableView editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return UITableViewCellEditingStyleDelete;
+}
+#pragma mark 设置处理编辑情况
+- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (editingStyle == UITableViewCellEditingStyleDelete) {
+        // 1. 更新数据
+        [themeArray removeObjectAtIndex:indexPath.row];
+        
+        // 2. 更新UI
+        [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
+    }
+    
+}
+
+#pragma mark 在滑动手势删除某一行的时候，显示出更多的按钮
+- (NSArray *)tableView:(UITableView *)tableView editActionsForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    // 添加一个删除按钮
+    UITableViewRowAction *deleteRowAction = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleDestructive title:@"删除" handler:^(UITableViewRowAction *action, NSIndexPath *indexPath) {
+        
+        UIAlertView *alertViews = [[UIAlertView alloc] initWithTitle:@"删除主题同时会删除主题包含全部照片,确定删除？" message:nil delegate:self cancelButtonTitle:@"确定" otherButtonTitles:@"取消", nil];
+        alertViews.tag=10001;
+        [alertViews show];
+        selectedIndex=(int)indexPath.row;
+        [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
+    }];
+    // 添加一个更多按钮
+    UITableViewRowAction *moreRowAction = [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleNormal title:@"编辑" handler:^(UITableViewRowAction *action, NSIndexPath *indexPath) {
+        [self edittheme:[themeArray objectAtIndex:indexPath.row]];
+        [tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationMiddle];
+    }];
+    moreRowAction.backgroundColor=RGB(220, 220, 220, 1);
+    return @[deleteRowAction,moreRowAction];
+}
+
+-(void)edittheme:(NSDictionary*)editdic{
+    NSLog(@"edit is %@",editdic);
+    AddThemeViewController *nextview=[[AddThemeViewController alloc]init];
+    nextview.editDic=editdic;
+    nextview.isEdit=YES;
+    [self.navigationController pushViewController:nextview animated:YES];
+
+}
+
+- (void)alertView:(UIAlertView *)alertViews clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+    if (alertViews.tag==10001) {
+        if (buttonIndex==0) {
+            [themeArray removeObjectAtIndex:selectedIndex];
+
+        }else{
+            
+        }
+    }
+}
+
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.

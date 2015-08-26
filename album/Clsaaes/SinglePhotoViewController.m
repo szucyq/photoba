@@ -18,17 +18,58 @@
 #import <GoogleOpenSource/GoogleOpenSource.h>
 #import <GooglePlus/GooglePlus.h>
 
-@interface SinglePhotoViewController ()
+@interface SinglePhotoViewController ()<UIScrollViewDelegate,UITextViewDelegate>{
+
+    UIScrollView    *contentSV;
+    int             scrollerIndex;
+    UITextView      *infoTextView;
+}
 
 @end
 
 @implementation SinglePhotoViewController
+@synthesize currentimageIndex,imagearray;
 
+-(void)viewDidAppear:(BOOL)animated{
+
+    for (int i=0; i < [imagearray count]; i++) {
+        NSDictionary *imagerecord=[imagearray objectAtIndex:i];
+        
+        NSString * DocumentsPath = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents/PhotoFile"];
+        NSString *imagepathstr=[NSString stringWithFormat:@"%@/%@",DocumentsPath,[imagerecord objectForKey:@"name"] ];
+        UIImage *image=[UIImage imageWithContentsOfFile:imagepathstr];
+        
+        UIImageView *iv = [[UIImageView alloc] initWithFrame:CGRectMake(kWidth * i, 0, kWidth, kHeight)];
+        [iv setImage:image];
+        iv.contentMode=UIViewContentModeScaleAspectFit;
+        [contentSV addSubview:iv];
+        iv = nil;
+    }
+
+}
 - (void)viewDidLoad {
+    scrollerIndex=currentimageIndex;
+    NSLog(@"imagedata is %@",imagearray);
+    NSLog(@"currentindex is %d",currentimageIndex);
     [super viewDidLoad];
     self.view.backgroundColor=RGB(255, 255, 255, 1);
     self.tabBarController.tabBar.hidden=YES;
 
+    contentSV = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, kWidth, kHeight)];
+    contentSV.backgroundColor=[UIColor whiteColor];
+//    contentSV.bounces = YES;
+    contentSV.pagingEnabled = YES;
+    contentSV.delegate = self;
+//    contentSV.userInteractionEnabled = YES;
+    contentSV.showsHorizontalScrollIndicator = NO;
+    [self.view addSubview:contentSV];
+    
+    [contentSV setContentSize:CGSizeMake(kWidth*imagearray.count, 0)];
+    [contentSV setContentOffset:CGPointMake(0, 0)];
+    
+
+    
+    
     UIImageView *navigationbarimg=[[UIImageView alloc]initWithFrame:CGRectMake(0, 0, kWidth,kNavHeight)];
     navigationbarimg.backgroundColor=RGB(54, 150, 207,1);
     [self.view addSubview:navigationbarimg];
@@ -59,6 +100,15 @@
     [backbutton setTitleColor:[UIColor grayColor] forState:UIControlStateHighlighted];
     [backbutton addTarget:self action:@selector(backAction) forControlEvents:UIControlEventTouchUpInside];
     [self.view addSubview:backbutton];
+    
+    infoTextView=[[UITextView alloc]initWithFrame:CGRectMake(0, kHeight-100, kWidth, 100)];
+    infoTextView.delegate=self;
+    [infoTextView setBackgroundColor:RGB(67, 67, 67, 0.9)];
+    infoTextView.returnKeyType=UIReturnKeyDone;
+    
+    [self.view addSubview:infoTextView];
+
+    
 
 }
 -(void)backAction{
@@ -100,6 +150,67 @@
                             }];
 
 }
+#pragma mark
+#pragma mark-- UIScrollViewDelegate
+-(void)scrollViewDidScroll:(UIScrollView *)scrollView{
+    //NSLog(@"scrollViewDidScroll");
+    if (scrollView == contentSV) {
+        CGFloat pageWidth = scrollView.frame.size.width;
+        int page = floor((scrollView.contentOffset.x - pageWidth / 2) / pageWidth) + 1;
+        scrollerIndex = page;
+    }
+}
+-(void)scrollViewWillBeginDragging:(UIScrollView *)scrollView{
+}
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView{
+    //NSLog(@"scrollViewDidEndDecelerating");
+    if (scrollView == contentSV) {
+
+    }else {
+        
+    }
+}
+#pragma mark
+#pragma mark-----UITextField delegate
+-(BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text
+{
+    if (textView ==infoTextView) {
+        if ([text isEqualToString:@"\n"]) {
+            [infoTextView resignFirstResponder];
+            infoTextView.frame=CGRectMake(0, kHeight-100, kWidth, 100);
+            return NO;
+        }
+    }
+    return YES;
+}
+- (BOOL)textViewShouldBeginEditing:(UITextView *)textView{
+
+    NSLog(@"begin editing");
+    
+    infoTextView.frame=CGRectMake(0, kHeight-350, kWidth, 100);
+
+    return YES;
+}
+
+//计算自动高度
+- (CGSize)labelAutoCalculateRectWith:(NSString*)text FontSize:(CGFloat)fontSize MaxSize:(CGSize)maxSize
+{
+    
+    NSMutableParagraphStyle* paragraphStyle = [[NSMutableParagraphStyle alloc]init];
+    
+    paragraphStyle.lineBreakMode=NSLineBreakByWordWrapping;
+    NSDictionary* attributes =@{NSFontAttributeName:[UIFont systemFontOfSize:fontSize],NSParagraphStyleAttributeName:paragraphStyle.copy};
+    
+    CGSize labelSize = [text boundingRectWithSize:maxSize options:NSStringDrawingUsesLineFragmentOrigin|NSStringDrawingUsesFontLeading|NSStringDrawingTruncatesLastVisibleLine attributes:attributes context:nil].size;
+    
+    labelSize.height=ceil(labelSize.height);
+    
+    labelSize.width=ceil(labelSize.width);
+    
+    return labelSize;
+    
+}
+
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
