@@ -42,7 +42,7 @@
     [titleText setText:@"设置"];
     [self.view addSubview:titleText];
     
-    UIImageView *touxiangimg=[[UIImageView alloc]initWithFrame:CGRectMake((kWidth-150)/2, 90, 150,150)];
+    UIImageView *touxiangimg=[[UIImageView alloc]initWithFrame:CGRectMake((kWidth-120)/2, 100, 120,120)];
     [touxiangimg setImage:[UIImage imageNamed:@"globe"]];
     [self.view addSubview:touxiangimg];
     
@@ -50,7 +50,7 @@
     banbenText.backgroundColor = [UIColor clearColor];
     banbenText.textColor=RGB(67, 67, 67, 1);
     banbenText.textAlignment = NSTextAlignmentCenter;
-    banbenText.font            = [UIFont systemFontOfSize:20.0];
+    banbenText.font            = [UIFont systemFontOfSize:16.0];
     [banbenText setText:@"版本V1.0.0"];
     [self.view addSubview:banbenText];
     
@@ -62,15 +62,15 @@
     listTV.showsVerticalScrollIndicator=NO;
     [self.view addSubview:listTV];
     
-    UILabel * contactText = [[UILabel alloc] initWithFrame: CGRectMake(0, kHeight-100, kWidth, 50)];
-    contactText.backgroundColor = [UIColor clearColor];
-    contactText.textColor=RGB(150, 150,150, 1);
-    contactText.textAlignment = NSTextAlignmentCenter;
-    contactText.font            = [UIFont systemFontOfSize:kTitleFont];
-    [contactText setText:@"联系我们\n songwei@gehua.cc"];
-    contactText.lineBreakMode = NSLineBreakByWordWrapping;
-    contactText.numberOfLines = 0;
-    [self.view addSubview:contactText];
+//    UILabel * contactText = [[UILabel alloc] initWithFrame: CGRectMake(0, kHeight-100, kWidth, 50)];
+//    contactText.backgroundColor = [UIColor clearColor];
+//    contactText.textColor=RGB(150, 150,150, 1);
+//    contactText.textAlignment = NSTextAlignmentCenter;
+//    contactText.font            = [UIFont systemFontOfSize:kTitleFont];
+//    [contactText setText:@"联系我们\n songwei@gehua.cc"];
+//    contactText.lineBreakMode = NSLineBreakByWordWrapping;
+//    contactText.numberOfLines = 0;
+//    [self.view addSubview:contactText];
 
 
 }

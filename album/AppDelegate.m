@@ -98,8 +98,8 @@ BMKMapManager* _mapManager;
     tabBarItem3.title = @"旅行拍";
     tabBarItem4.title = @"设置";
     
-    [tabBarItem1 setImage:[UIImage imageNamed:@"icon-camera"]];
-    [tabBarItem1 setSelectedImage:[UIImage imageNamed:@"icon-camera.png"]];
+    [tabBarItem1 setImage:[UIImage imageNamed:@"我的积分"]];
+    [tabBarItem1 setSelectedImage:[UIImage imageNamed:@"我的积分"]];
     
     [tabBarItem2 setImage:[UIImage imageNamed:@"icon-camera.png"]];
     [tabBarItem2 setSelectedImage:[UIImage imageNamed:@"icon-camera.png"]];
@@ -119,8 +119,8 @@ BMKMapManager* _mapManager;
         NSLog(@"数据库打开失败");
     }
     NSString *sqlCreateTable1 = @"CREATE TABLE IF NOT EXISTS PHOTOS ( name TEXT, detail TEXT,time TEXT, year TEXT,month TEXT,address TEXT,longitude TEXT,latitude TEXT,type TEXT)";
-    NSString *sqlCreateTable2 = @"CREATE TABLE IF NOT EXISTS THEMES ( name TEXT, detail TEXT, postername TEXT)";
-    NSString *sqlCreateTable3 = @"CREATE TABLE IF NOT EXISTS JOURNEYS (name TEXT, detail TEXT, postername TEXT)";
+    NSString *sqlCreateTable2 = @"CREATE TABLE IF NOT EXISTS THEMES (themeID TEXT, name TEXT, detail TEXT, postername TEXT)";
+    NSString *sqlCreateTable3 = @"CREATE TABLE IF NOT EXISTS JOURNEYS (journeyID TEXT,name TEXT, detail TEXT, postername TEXT)";
     
     NSString *sqlCreateTable4 = @"CREATE TABLE IF NOT EXISTS THEMEPHOTOS ( name TEXT, detail TEXT,time TEXT, year TEXT,month TEXT,address TEXT,longitude TEXT,latitude TEXT,type TEXT)";
 

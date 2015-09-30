@@ -36,6 +36,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    NSLog(@"the dic is %@",self.editDic);
     imagenamestr=@"";
     self.view.backgroundColor=RGB(255, 255, 255, 1);
     self.tabBarController.tabBar.hidden=YES;
@@ -49,7 +50,12 @@
     titleText.textColor=[UIColor whiteColor];
     titleText.textAlignment = NSTextAlignmentCenter;
     titleText.font            = [UIFont systemFontOfSize:kNavTitleFont];
-    [titleText setText:@"添加新主题"];
+    if (self.isEdit ==YES) {
+        [titleText setText:@"编辑主题"];
+    }else{
+        [titleText setText:@"添加新主题"];
+    }
+
     [self.view addSubview:titleText];
     
     UIButton* backbutton=[[UIButton alloc]initWithFrame:CGRectMake(10, 20, 60, 40)];
@@ -172,6 +178,63 @@
 }
 
 -(void)saveAction:(UIButton*)sender{
+    
+    if (self.isEdit==YES) {
+        if (nameTF.text.length==0) {
+
+        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"主题名称不能为空" message:nil delegate:self cancelButtonTitle:@"确定" otherButtonTitles:nil,nil];
+        [alertView show];
+        return;
+        
+    }
+    else if (detailTF.text.length==0){
+        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"主题描述不能为空" message:nil delegate:self cancelButtonTitle:@"确定" otherButtonTitles:nil,nil];
+        [alertView show];
+        return;
+        
+        
+    }
+    else{
+        
+        NSLog(@"imagestr is %@",imagenamestr);
+        sqlite3_stmt *statement;
+        
+        databasePath=[MyTime dbpathStr];
+        const char *dbpath = [databasePath UTF8String];
+        
+        if (sqlite3_open(dbpath, &paibaDB)==SQLITE_OK) {
+            NSString *editSQL = [NSString stringWithFormat:@"update testTable set name = %@ and detail = %@ WHERE themeID = %@",nameTF.text,detailTF.text,imagenamestr];
+
+//            NSString *insertSQL = [NSString stringWithFormat:@"INSERT INTO THEMES (themeID,name,detail,postername) VALUES(\"%@\",\"%@\",\"%@\")",nameTF.text,detailTF.text,imagenamestr];
+            
+            char *sql = "update testTable set testValue = ? and testName = ? WHERE testID = ?";
+
+            
+            const char *insert_stmt = [editSQL UTF8String];
+            sqlite3_prepare_v2(paibaDB, insert_stmt, -1, &statement, NULL);
+            if (sqlite3_step(statement)==SQLITE_DONE) {
+                [[NSNotificationCenter defaultCenter] postNotificationName:@"reloadthemelist"object:nil];
+                NSLog(@"添加成功");
+                
+                [self backAction];
+            }
+            else
+            {
+                
+                NSLog(@"添加失败");
+            }
+            sqlite3_finalize(statement);
+            sqlite3_close(paibaDB);
+        }
+
+        
+        
+        
+    }
+        
+    }
+    else{
+        
     if (nameTF.text.length==0) {
         
         UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"主题名称不能为空" message:nil delegate:self cancelButtonTitle:@"确定" otherButtonTitles:nil,nil];
@@ -185,15 +248,17 @@
         return;
 
     
-    }else{
+    }
+    else{
         NSLog(@"imagestr is %@",imagenamestr);
         sqlite3_stmt *statement;
 
         databasePath=[MyTime dbpathStr];
+        NSString *themeidstr=[MyTime timenowStr];
         const char *dbpath = [databasePath UTF8String];
         
         if (sqlite3_open(dbpath, &paibaDB)==SQLITE_OK) {
-            NSString *insertSQL = [NSString stringWithFormat:@"INSERT INTO THEMES (name,detail,postername) VALUES(\"%@\",\"%@\",\"%@\")",nameTF.text,detailTF.text,imagenamestr];
+            NSString *insertSQL = [NSString stringWithFormat:@"INSERT INTO THEMES (themeID,name,detail,postername) VALUES(\"%@\",\"%@\",\"%@\",\"%@\")",themeidstr,nameTF.text,detailTF.text,imagenamestr];
             const char *insert_stmt = [insertSQL UTF8String];
             sqlite3_prepare_v2(paibaDB, insert_stmt, -1, &statement, NULL);
             if (sqlite3_step(statement)==SQLITE_DONE) {
@@ -215,7 +280,7 @@
     
     }
 
-
+    }
 }
 
 #pragma mark

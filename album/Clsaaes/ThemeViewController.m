@@ -120,13 +120,15 @@
             
             while (sqlite3_step(statement) == SQLITE_ROW)
             {
-                NSString *namestr = [[NSString alloc] initWithUTF8String:(const char *)sqlite3_column_text(statement, 0)];
+                NSString *themeIDstr = [[NSString alloc] initWithUTF8String:(const char *)sqlite3_column_text(statement, 0)];
+
+                NSString *namestr = [[NSString alloc] initWithUTF8String:(const char *)sqlite3_column_text(statement, 1)];
                 
-                NSString *detailstr = [[NSString alloc] initWithUTF8String:(const char *)sqlite3_column_text(statement, 1    )];
+                NSString *detailstr = [[NSString alloc] initWithUTF8String:(const char *)sqlite3_column_text(statement, 2    )];
                 
-                NSString *posternamestr = [[NSString alloc] initWithUTF8String:(const char *)sqlite3_column_text(statement, 2    )];
+                NSString *posternamestr = [[NSString alloc] initWithUTF8String:(const char *)sqlite3_column_text(statement, 3    )];
                 
-                NSDictionary *record=[[NSDictionary alloc]initWithObjectsAndKeys:namestr,@"name",detailstr,@"detail",posternamestr,@"postername", nil];
+                NSDictionary *record=[[NSDictionary alloc]initWithObjectsAndKeys:themeIDstr,@"themeID",namestr,@"name",detailstr,@"detail",posternamestr,@"postername", nil];
                 [themeArray addObject:record];
 
             }
