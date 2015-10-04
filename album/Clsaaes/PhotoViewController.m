@@ -498,9 +498,17 @@
             const char *dbpath = [databasePath UTF8String];
             
             NSString *dateStr=[NSString stringWithFormat:@"%@",[[currentDic objectForKey:@"{Exif}"] objectForKey:@"DateTimeOriginal"]];
-            NSString *yearstr=[dateStr substringToIndex:4];
-            NSString *monthstr=[dateStr substringWithRange:NSMakeRange(5, 2)];
-            NSString *timestr=[MyTime timenowStr];
+            NSLog(@"date2:%@",dateStr);
+            NSString *yearstr=nil;
+            NSString *monthstr=nil;
+            NSString *timestr=nil;
+            if(dateStr){
+                yearstr=[dateStr substringToIndex:4];
+                
+                monthstr=[dateStr substringWithRange:NSMakeRange(5, 2)];
+                timestr=[MyTime timenowStr];
+            }
+            
 
             
             NSString * DocumentsPath = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents/PhotoFile"];
@@ -552,8 +560,14 @@
     //BMKReverseGeoCodeResult是编码的结果，包括地理位置，道路名称，uid，城市名等信息
     addressStr=result.address;
     NSString *dateStr=[NSString stringWithFormat:@"%@",[[currentDic objectForKey:@"{Exif}"] objectForKey:@"DateTimeOriginal"]];
-    NSString *yearstr=[dateStr substringToIndex:4];
-    NSString *monthstr=[dateStr substringWithRange:NSMakeRange(5, 2)];
+    NSLog(@"date:%@",dateStr);
+    NSString *yearstr=nil;
+    NSString *monthstr=nil;
+    if(dateStr){
+        yearstr=[dateStr substringToIndex:4];
+        monthstr=[dateStr substringWithRange:NSMakeRange(5, 2)];
+    }
+    
     
     CGSize size = CGSizeMake([[currentDic objectForKey:@"PixelWidth"] floatValue], [[currentDic objectForKey:@"PixelHeight"] floatValue]); //设置上下文（画布）大小
     UIGraphicsBeginImageContext(size); //创建一个基于位图的上下文(context)，并将其设置为当前上下文

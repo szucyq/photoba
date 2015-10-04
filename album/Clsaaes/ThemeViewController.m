@@ -120,13 +120,28 @@
             
             while (sqlite3_step(statement) == SQLITE_ROW)
             {
-                NSString *themeIDstr = [[NSString alloc] initWithUTF8String:(const char *)sqlite3_column_text(statement, 0)];
-
-                NSString *namestr = [[NSString alloc] initWithUTF8String:(const char *)sqlite3_column_text(statement, 1)];
+                NSString *themeIDstr =nil;
+                if((const char *)sqlite3_column_text(statement, 0)){
+                    themeIDstr=[[NSString alloc] initWithUTF8String:(const char *)sqlite3_column_text(statement, 0)];
+                }
                 
-                NSString *detailstr = [[NSString alloc] initWithUTF8String:(const char *)sqlite3_column_text(statement, 2    )];
+                NSString *namestr=nil ;
+                if((const char *)sqlite3_column_text(statement, 1)){
+                    namestr=[[NSString alloc] initWithUTF8String:(const char *)sqlite3_column_text(statement, 1)];
+                }
                 
-                NSString *posternamestr = [[NSString alloc] initWithUTF8String:(const char *)sqlite3_column_text(statement, 3    )];
+                
+                NSString *detailstr =nil;
+                if((const char *)sqlite3_column_text(statement, 2    )){
+                    detailstr=[[NSString alloc] initWithUTF8String:(const char *)sqlite3_column_text(statement, 2    )];
+                }
+                
+                
+                NSString *posternamestr =nil;
+                if((const char *)sqlite3_column_text(statement, 3    )){
+                   posternamestr= [[NSString alloc] initWithUTF8String:(const char *)sqlite3_column_text(statement, 3    )];
+                }
+                
                 
                 NSDictionary *record=[[NSDictionary alloc]initWithObjectsAndKeys:themeIDstr,@"themeID",namestr,@"name",detailstr,@"detail",posternamestr,@"postername", nil];
                 [themeArray addObject:record];
